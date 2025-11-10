@@ -2,14 +2,16 @@ name: Create Release
 
 # トリガー：「v」で始まるタグ (v1.0.0など) がプッシュされたら実行
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-  workflow_dispatch: {} # 手動実行も可能にする
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 jobs:
   # if: (マージされた) AND (ラベルに 'release' が含まれる)
-  if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release') }}
+  if: >
+      github.event.pull_request.merged &&
+      contains(github.event.pull_request.labels.*.name, 'release')
 
   call_build:
     name: Call Build Workflow
