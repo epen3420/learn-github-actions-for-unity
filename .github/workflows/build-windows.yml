@@ -1,6 +1,7 @@
 name: Reusable - Windows Build
 
 on:
+  workflow_dispatch: {}
   workflow_call:
     # 呼び出し元にアーティファクト名を返す設定
     outputs:
