@@ -10,7 +10,7 @@ on:
 jobs:
   call_build:
     name: Call Build Workflow
-    uses: ./.github/workflows/build-windows.yml
+    uses: ./.github/workflows/build-windows.yml # ここを書き換えれば、ビルドプラットフォームを変えられる
     secrets: inherit
 
   create_release:
@@ -19,17 +19,18 @@ jobs:
     needs: call_build
     env:
       ZIP_FILE_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
+      ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
 
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           # 呼び出したビルドジョブの出力（artifact_name）を指定
-          name: ${{ needs.call_build.outputs.artifact_name }}
-          path: windows-build
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_NAME }}
 
       - name: Zip build files
-        run: zip -r ${{ env.ZIP_FILE_NAME }} ./windows-build
+        run: zip -r ${{ env.ZIP_FILE_NAME }} ./${{ env.ARTIFACT_NAME}}
 
       - name: Create Release
         uses: actions/create-release@v1
@@ -41,7 +42,7 @@ jobs:
           release_name: Release ${{ github.ref_name }} # タグ名をそのまま使用
           generate_release_notes: true # 説明文をPRから自動生成
 
-      - name: Upload Release Asset (Windows)
+      - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,4 @@
-name: Reusable - Windows Build
+name: Windows Build
 
 on:
   workflow_dispatch: {}
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     # このジョブの出力を定義
     outputs:
-      artifact_name: Build-${{ steps.vars.outputs.sha_short }}
+      artifact_name: Windows-Build-${{ steps.vars.outputs.sha_short }}
 
     steps:
       # 仮想環境にUnity Projectを入れる
