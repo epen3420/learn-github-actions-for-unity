@@ -16,12 +16,14 @@ jobs:
     steps:
       - name: Check pr name
         if: startsWith(github.event.pull_request.head.ref, 'release/') == false
-        run: echo "PR name is invalid. Please rename release/"
+        run: |
+          echo "PR name is invalid. Please rename release/"
+          exit 1
 
       - name: Set env variables
         run: |
           echo "ARTIFACT_NAME=${{ inputs.ARTIFACT_NAME }}" >> $GITHUB_ENV
-          echo "VERSION_TAG=${{ github.event.pull_request.head_ref }} | sed 's/release\///'" >> $GITHUB_ENV
+          echo "VERSION_TAG=$(echo "${{ github.event.pull_request.head_ref }}"" | sed 's/release\///')" >> $GITHUB_ENV
           echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${{ env.VERSION_TAG }}.zip" >> $GITHUB_ENV
 
       - name: Download build artifact
