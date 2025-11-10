@@ -18,6 +18,6 @@ jobs:
   call_release:
     name: Release
     needs: call_build
-    uses: ./.github/workflows/create_release.yml
+    uses: ./.github/workflows/create-release.yml
     with:
       ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
