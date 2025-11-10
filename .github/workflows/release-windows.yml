@@ -1,0 +1,23 @@
+name: Release Build (Windows)
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  call_build:
+    name: Build
+    if: >
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'release')
+    uses: ./.github/workflows/build-windows.yml # ここを書き換えればビルドのメソッドを変えられる
+    secrets: inherit
+
+  call_release:
+    name: Release
+    needs: call_build
+    uses: ./.github/workflows/create_release.yml
+    inputs:
+      ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
