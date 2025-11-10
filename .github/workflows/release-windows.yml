@@ -19,5 +19,5 @@ jobs:
     name: Release
     needs: call_build
     uses: ./.github/workflows/create_release.yml
-    inputs:
+    with:
       ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
