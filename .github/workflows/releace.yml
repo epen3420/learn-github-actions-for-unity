@@ -1,0 +1,52 @@
+name: Create Release
+
+# トリガー：「v」で始まるタグ (v1.0.0など) がプッシュされたら実行
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch: {} # 手動実行も可能にする
+
+jobs:
+  call_build:
+    name: Call Build Workflow
+    uses: ./.github/workflows/build-windows.yml
+    secrets: inherit
+
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: call_build
+    env:
+      ZIP_FILE_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          # 呼び出したビルドジョブの出力（artifact_name）を指定
+          name: ${{ needs.call_build.outputs.artifact_name }}
+          path: windows-build
+
+      - name: Zip build files
+        run: zip -r ${{ env.ZIP_FILE_NAME }} ./windows-build
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }} # トリガーとなったタグ名
+          release_name: Release ${{ github.ref_name }} # タグ名をそのまま使用
+          generate_release_notes: true # 説明文をPRから自動生成
+
+      - name: Upload Release Asset (Windows)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ env.ZIP_FILE_NAME }}
+          asset_name: ${{ env.ZIP_FILE_NAME }} # リリースに表示されるファイル名
+          asset_content_type: application/zip
