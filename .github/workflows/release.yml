@@ -21,11 +21,15 @@ jobs:
     needs: call_build
 
     steps:
+      - name: Check pr name
+        if: startsWith(github.event.pull_request.head.ref, 'release/') == false
+        run: echo "PR name is invalid. Please rename release/"
+
       - name: Set env variables
         run: |
-          echo "ARTIFACT_NAME=${{ needs.call_build.outputs.artifact_name }}"
+          echo "ARTIFACT_NAME=${{ needs.call_build.outputs.artifact_name }}" >> $GITHUB_ENV
           echo "VERSION_TAG=${{ github.event.pull_request.head.ref#release/ }}" >> $GITHUB_ENV
-          echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${{ env.VERSION_TAG }}.zip"
+          echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${{ env.VERSION_TAG }}.zip" >> $GITHUB_ENV
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
