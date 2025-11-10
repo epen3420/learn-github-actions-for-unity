@@ -1,6 +1,5 @@
 name: Create Release
 
-# トリガー：「v」で始まるタグ (v1.0.0など) がプッシュされたら実行
 on:
   pull_request:
     branches:
@@ -8,53 +7,50 @@ on:
     types: [closed]
 
 jobs:
-  check_pr:
-    name: Check Can Build
-    if: |
-      (github.event.pull_request.merged == true) &&
-      (contains(github.event.pull_request.labels.*.name, 'release'))
-
-
-  call_build:
-    name: Call Build Workflow
-    uses: ./.github/workflows/build-windows.yml # ここを書き換えれば、ビルドプラットフォームを変えられる
-    secrets: inherit
-
   create_release:
-    name: Create Release
+    name: Build and Create Release
     runs-on: ubuntu-latest
-    needs: call_build
-    env:
-      ZIP_FILE_NAME: ${{ github.event.repository.name }}-${{ github.ref_name }}.zip
-      ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
+
+    if: >
+      github.event.pull_request.merged == true &&
+      contains(github.event.pull_request.labels.*.name, 'release')
 
     steps:
+      - name: Call build workflow
+        uses: ./.github/workflows/build-windows.yml
+        secrets: inherit
+
+      - name: Prepare environment variables
+        id: prepare
+        run: |
+          echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${{ github.event.pull_request.head.ref }}.zip" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=build_artifact" >> $GITHUB_ENV
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          # 呼び出したビルドジョブの出力（artifact_name）を指定
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ env.ARTIFACT_NAME }}
 
       - name: Zip build files
-        run: zip -r ${{ env.ZIP_FILE_NAME }} ./${{ env.ARTIFACT_NAME}}
+        run: zip -r ${{ env.ZIP_FILE_NAME }} ./${{ env.ARTIFACT_NAME }}
 
-      - name: Create Release
-        uses: actions/create-release@v1
+      - name: Create release
         id: create_release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }} # トリガーとなったタグ名
-          release_name: Release ${{ github.ref_name }} # タグ名をそのまま使用
-          generate_release_notes: true # 説明文をPRから自動生成
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          generate_release_notes: true
 
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./${{ env.ZIP_FILE_NAME }}
-          asset_name: ${{ env.ZIP_FILE_NAME }} # リリースに表示されるファイル名
+          asset_name: ${{ env.ZIP_FILE_NAME }}
           asset_content_type: application/zip
