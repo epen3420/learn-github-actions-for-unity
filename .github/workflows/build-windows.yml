@@ -1,0 +1,61 @@
+name: Reusable - Windows Build
+
+on:
+  workflow_call:
+    # 呼び出し元にアーティファクト名を返す設定
+    outputs:
+      artifact_name:
+        description: "The name of the build artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+    # 呼び出し元からシークレットを受け取る設定
+    secrets:
+      UNITY_EMAIL:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+      UNITY_LICENSE:
+        required: true
+
+jobs:
+  build:
+    name: Run the Windows build
+    runs-on: ubuntu-latest
+    # このジョブの出力を定義
+    outputs:
+      artifact_name: Build-${{ steps.vars.outputs.sha_short }}
+
+    steps:
+      # 仮想環境にUnity Projectを入れる
+      - name: Check out my unity project.
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ビルドファイルに使うHashを変数へ
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      # 次の起動時の高速化のためライブラリをキャッシュ
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Run the Windows build
+        uses: game-ci/unity-builder@v4
+        env:
+          # 受け取ったシークレットを使う
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          targetPlatform: StandaloneWindows64
+
+      - name: Upload the Windows Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-${{ steps.vars.outputs.sha_short }}
+          path: build
