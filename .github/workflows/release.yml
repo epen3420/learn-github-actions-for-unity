@@ -28,7 +28,7 @@ jobs:
       - name: Set env variables
         run: |
           echo "ARTIFACT_NAME=${{ needs.call_build.outputs.artifact_name }}" >> $GITHUB_ENV
-          echo "VERSION_TAG=${{ github.head_ref#release/ }}" >> $GITHUB_ENV
+          echo "VERSION_TAG=${{ github.event.pull_request.head_ref | sed 's/release\///' }}" >> $GITHUB_ENV
           echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${{ env.VERSION_TAG }}.zip" >> $GITHUB_ENV
 
       - name: Download build artifact
