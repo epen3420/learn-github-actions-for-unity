@@ -24,9 +24,9 @@ jobs:
         run: |
           echo "ARTIFACT_NAME=${{ inputs.ARTIFACT_NAME }}" >> $GITHUB_ENV
           branch_name="${{ github.event.pull_request.head.ref }}"
-          version_tag=$(echo "${ branch_name }" | sed 's/release\///')
-          echo "VERSION_TAG=${ version_tag } >> $GITHUB_ENV
-          echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${ version_tag }.zip" >> $GITHUB_ENV
+          version_tag=$(echo "${branch_name}" | sed 's/release\///')
+          echo "VERSION_TAG=${version_tag}" >> $GITHUB_ENV
+          echo "ZIP_FILE_NAME=${{ github.event.repository.name }}-${version_tag}.zip" >> $GITHUB_ENV
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
