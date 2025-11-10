@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     # このジョブの出力を定義
     outputs:
-      artifact_name: Windows-Build-${{ steps.vars.outputs.sha_short }}
+      artifact_name: ${{ steps.vars.outputs.build_id }}
 
     steps:
       # 仮想環境にUnity Projectを入れる
@@ -35,7 +35,7 @@ jobs:
       # ビルドファイルに使うHashを変数へ
       - name: Set outputs
         id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "build_id=Windows-Build-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       # 次の起動時の高速化のためライブラリをキャッシュ
       - uses: actions/cache@v4
@@ -58,5 +58,5 @@ jobs:
       - name: Upload the Windows Build
         uses: actions/upload-artifact@v4
         with:
-          name: Build-${{ steps.vars.outputs.sha_short }}
+          name: ${{ steps.vars.outputs.build_id }}
           path: build

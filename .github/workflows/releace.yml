@@ -8,6 +8,11 @@ on:
   workflow_dispatch: {} # 手動実行も可能にする
 
 jobs:
+  # if: (マージされた) AND (ラベルに 'release' が含まれる)
+  if: >
+    github.event.pull_request.merged == true &&
+    contains(github.event.pull_request.labels.*.name, 'release')
+
   call_build:
     name: Call Build Workflow
     uses: ./.github/workflows/build-windows.yml # ここを書き換えれば、ビルドプラットフォームを変えられる
