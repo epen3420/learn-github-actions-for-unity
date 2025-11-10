@@ -4,7 +4,9 @@ on:
   workflow_call:
     inputs:
       ARTIFACT_NAME:
+        description: 'Build artifact name to download'
         required: true
+        type: string
 
 jobs:
   create_release:
