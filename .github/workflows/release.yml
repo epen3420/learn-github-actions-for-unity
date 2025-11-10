@@ -9,9 +9,9 @@ on:
 
 jobs:
   # if: (マージされた) AND (ラベルに 'release' が含まれる)
-  if: >
-      github.event.pull_request.merged &&
-      contains(github.event.pull_request.labels.*.name, 'release')
+  if: |
+    (github.event.pull_request.merged == true) &&
+    (contains(github.event.pull_request.labels.*.name, 'release'))
 
   call_build:
     name: Call Build Workflow
