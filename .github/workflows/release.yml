@@ -8,12 +8,6 @@ on:
     types: [closed]
 
 jobs:
-  # if: (マージされた) AND (ラベルに 'release' が含まれる)
-  check_pr:
-    if: |
-      (github.event.pull_request.merged == true) &&
-      (contains(github.event.pull_request.labels.*.name, 'release'))
-
   call_build:
     name: Call Build Workflow
     uses: ./.github/workflows/build-windows.yml # ここを書き換えれば、ビルドプラットフォームを変えられる
@@ -28,6 +22,11 @@ jobs:
       ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
 
     steps:
+      - name: Check PR
+        if: |
+          (github.event.pull_request.merged == true) &&
+          (contains(github.event.pull_request.labels.*.name, 'release'))
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
