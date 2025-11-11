@@ -27,7 +27,8 @@ jobs:
         run: echo "build_id=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       # 次の起動時の高速化のためライブラリをキャッシュ
-      - uses: actions/cache@v4
+      - name: Cache Library
+        uses: actions/cache@v4
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
