@@ -85,6 +85,7 @@ jobs:
 
       # Unity ビルド実行
       - name: Run the build
+        if: ${{ env.build_target_name }} == Windows
         uses: game-ci/unity-builder@v4
         env:
           # 受け取ったシークレットを使う
@@ -93,7 +94,21 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           # Set Build Variables ステップで設定した環境変数を参照
-          targetPlatform: ${{ env.build_target }}
+          targetPlatform: StandaloneWindows64
+
+      - name: Run the build
+        if: ${{ env.build_target_name }} == WebGL
+        uses: game-ci/unity-builder@v4
+        env:
+          # 受け取ったシークレットを使う
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          # Set Build Variables ステップで設定した環境変数を参照
+          targetPlatform: WebGL
+          webglCompressionFormat: Disabled
+          webglDataCaching: true
 
       # ビルド成果物をアップロード
       - name: Upload the Build
