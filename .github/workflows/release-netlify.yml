@@ -32,10 +32,39 @@ jobs:
         path: build
 
     # ダウンロードしたビルドファイルをNetlifyへDeploy
-    - name: Deploy to Netlify
-      uses: netlify/actions/cli@master
-      env:
-        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_FOR_DEV }}
+    - name: Checkout Next.js repository
+      uses: actions/checkout@v4
       with:
-        args: deploy --dir=build --prod
+        # ★★★ ここにNext.jsリポジトリのSSH URLを指定 ★★★
+        repository: git@github.com:epen3420/epen_page.git
+        ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
+        path: nextjs-repo
+        # lfs: true
+
+    # 3. Next.js リポジトリの public/unity/ にファイルを上書きコピー
+    - name: Copy build files to public/unity
+      run: |
+        # コピー先のフォルダを作成（存在しない場合）
+        mkdir -p nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+        # フォルダの中身を一度削除（古いビルドを残さないため）
+        rm -rf nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/*
+        # ダウンロードしたビルド成果物（webgl-buildの中身）をコピー
+        # （'webgl-build' フォルダには 'Build' と 'TemplateData' が入っている想定）
+        cp -r webgl-build/* nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+
+    # 4. 変更をコミットしてプッシュ
+    - name: Commit and push changes
+      run: |
+        cd nextjs-repo
+        git config --global user.name 'GitHub Actions Bot'
+        git config --global user.email 'github-actions-bot@users.noreply.github.com'
+
+        # 変更があるかチェック
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "No changes to commit."
+          exit 0
+        fi
+
+        git add .
+        git commit -m "chore(unity): Update WebGL build [skip ci]"
+        git push
