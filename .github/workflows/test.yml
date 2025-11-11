@@ -19,8 +19,9 @@ jobs:
 
       # 4. 変更をコミットしてプッシュ
       - name: Commit and push changes
-        working_directory: ./nextjs-repo
         run: |
+          cd nextjs-repo
+          echo "$(ls -a)"
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'github-actions-bot@users.noreply.github.com'
 
