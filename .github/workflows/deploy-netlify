@@ -1,0 +1,36 @@
+name: Deploy WebGL To Netlify
+
+on:
+  workflow_call:
+    inputs:
+      ARTIFACT_NAME:
+        description: 'Build artifact name to download'
+        required: true
+        type: string
+    secrets:
+      NETLIFY_AUTH_TOKEN:
+        required: true
+      NETLIFY_SITE_ID_FOR_DEV:
+        required: true
+
+deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+     # Builder で出力した WebGL ビルドをダウンロード
+     - name: Download artifact
+       uses: actions/download-artifact@v3
+       with:
+         name: ${{ inputs.ARTIFACT_NAME }}
+         path: build
+
+     # ダウンロードしたビルドファイルをNetlifyへDeploy
+     - name: Deploy to Netlify
+       uses: netlify/actions/cli@master
+       env:
+         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_FOR_DEV }}
+       with:
+         args: deploy --dir=${{ inputs.ARTIFACT_NAME }} --prod

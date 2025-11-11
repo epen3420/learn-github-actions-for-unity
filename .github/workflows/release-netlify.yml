@@ -1,0 +1,25 @@
+name: Release WebGL To Netlify
+
+on:
+  workflow_dispatch: {}
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types: [closed]
+
+jobs:
+  call_build_webgl:
+    name: Build
+    # if: >
+    #   github.event.pull_request.merged == true &&
+    #   contains(github.event.pull_request.labels.*.name, 'release')
+    uses: ./.github/workflows/build-webgl.yml # ここを書き換えればビルドのメソッドを変えられる
+    secrets: inherit
+
+  call_release:
+    name: Release To Netlify
+    needs: call_build_webgl
+    uses: ./.github/workflows/release-netlify.yml
+    with:
+      ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
+    secrets: inherit
