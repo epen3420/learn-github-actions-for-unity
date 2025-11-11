@@ -1,4 +1,4 @@
-name: Release WebGL To Netlify
+name: Upload build to repository
 
 on:
   workflow_call:
