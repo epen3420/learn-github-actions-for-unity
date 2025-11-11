@@ -1,0 +1,15 @@
+name: Test
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    steps:
+      - name: Check disk usage by folder
+        run: |
+            echo "--- Checking overall disk space:"
+            df -h
+            echo "--- Checking size of top-level directories:"
+            # /mnt と /proc は仮想ファイルシステムなので除外
+            sudo du -sh --exclude=/mnt --exclude=/proc /*
