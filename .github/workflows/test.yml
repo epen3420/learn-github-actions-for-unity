@@ -11,6 +11,14 @@ jobs:
         run: |
           mkdir webgl-build
           echo "HEllo" >> webgl-build/temp.txt
+
+      - name: Checkout Next.js repository
+        uses: actions/checkout@v4
+        with:
+          repository: git@github.com:epen3420/epen_page.git
+          ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
+          path: nextjs-repo
+
       - name: Copy build files to public/unity
         run: |
           mkdir -p nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
