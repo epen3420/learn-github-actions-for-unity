@@ -15,7 +15,7 @@ jobs:
     #   contains(github.event.pull_request.labels.*.name, 'release')
     uses: ./.github/workflows/build-unity.yml
     secrets: inherit
-    inputs:
+    with:
       build_target_name: WebGL
 
   deploy:
