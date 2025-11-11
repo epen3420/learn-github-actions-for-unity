@@ -18,6 +18,35 @@ on:
         required: true
 
 jobs:
+  pre-build:
+    name: Pre build unity
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-library.outputs.cache-hit }}
+
+    steps:
+      # 仮想環境にクローン
+      - name: Check out my unity project.
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          HASH=$(git rev-parse --short HEAD)
+          echo "CACHE_KEY=Library-$HASH" >> $GITHUB_ENV
+
+      - name: Cache library
+        id: cache-library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: ${{ env.CACHE_KEY }}
+          restore-keys: |
+            Library-
+
+
   build:
     name: Run the WebGL build
     runs-on: ubuntu-latest
@@ -26,14 +55,6 @@ jobs:
       artifact_name: ${{ env.ARTIFACT_NAME }}
 
     steps:
-      # ビルドが始まる前に、不要なツールを削除してディスクスペースを確保する
-      - name: Free up disk space
-        uses: easimon/maximize-build-space-action@v10
-        with:
-          remove-android: true
-          remove-dotnet: true
-          remove-haskell: true
-
       # 仮想環境にクローン
       - name: Check out my unity project.
         uses: actions/checkout@v4
@@ -50,7 +71,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: ${{ needs.pre-build.outputs.cache-key }}
           restore-keys: |
             Library-
 
