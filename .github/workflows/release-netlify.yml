@@ -16,10 +16,10 @@ jobs:
     uses: ./.github/workflows/build-webgl.yml # ここを書き換えればビルドのメソッドを変えられる
     secrets: inherit
 
-  call_release:
-    name: Release To Netlify
+  call_deploy:
+    name: Deploy To Netlify
     needs: call_build_webgl
-    uses: ./.github/workflows/release-netlify.yml
+    uses: ./.github/workflows/deploy-netlify.yml
     with:
       ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
     secrets: inherit
