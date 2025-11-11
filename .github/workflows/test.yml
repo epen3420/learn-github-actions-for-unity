@@ -15,7 +15,7 @@ jobs:
       - name: Checkout Next.js repository
         uses: actions/checkout@v4
         with:
-          repository: git@github.com:epen3420/epen_page.git
+          repository: epen3420/epen_page
           ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
           path: nextjs-repo
 
