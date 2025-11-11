@@ -27,6 +27,11 @@ jobs:
     needs: pre-build
 
     steps:
+      - name: Check out my unity project.
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
       - name: Run the WebGL build
         uses: game-ci/unity-builder@v4
         env:

@@ -27,6 +27,12 @@ jobs:
     needs: pre-build
 
     steps:
+      # 仮想環境にUnity Projectを入れる
+      - name: Check out my unity project.
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
       - name: Run the Windows build
         uses: game-ci/unity-builder@v4
         env:
