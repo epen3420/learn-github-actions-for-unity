@@ -13,8 +13,10 @@ jobs:
     # if: >
     #   github.event.pull_request.merged == true &&
     #   contains(github.event.pull_request.labels.*.name, 'release')
-    uses: ./.github/workflows/build-webgl.yml # ここを書き換えればビルドのメソッドを変えられる
+    uses: ./.github/workflows/build-unity.yml
     secrets: inherit
+    inputs:
+      build_target_name: WebGL
 
   deploy:
     name: Deploy to Netlify

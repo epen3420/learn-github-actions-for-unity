@@ -1,0 +1,104 @@
+name: Unity Build (Windows/WebGL)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_target_name:
+        description: 'Choose Windows or WebGL'
+        required: true
+        type: choice
+        options:
+          - Windows
+          - WebGL
+        default: 'WebGL'
+  workflow_call:
+    inputs:
+      build_target_name:
+        description: 'Choose Windows or WebGL'
+        required: true
+        type: string # workflow_call では choice は使えないため string
+
+    secrets:
+      UNITY_EMAIL:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+      UNITY_LICENSE:
+        required: true
+
+    outputs:
+      artifact_name:
+        description: "The name of the build artifact"
+        value: ${{ jobs.build.outputs.artifact_name }}
+
+jobs:
+  build:
+    name: Run the build for ${{ inputs.build_target_name }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifact_name: ${{ steps.vars.outputs.artifact_name }}
+
+    steps:
+      # 仮想環境にクローン
+      - name: Check out my unity project
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ビルドターゲットに応じて環境変数を設定
+      - name: Set Build Variables
+        id: vars # ジョブの outputs で参照するため id を設定
+        run: |
+          echo "Setting build variables based on input: ${{ inputs.build_target_name }}"
+
+          # inputs.build_target_name に応じて build_target (プラットフォーム名) を設定
+          if [ "${{ inputs.build_target_name }}" == "Windows" ]; then
+            echo "build_target=StandaloneWindows64" >> $GITHUB_ENV
+          elif [ "${{ inputs.build_target_name }}" == "WebGL" ]; then
+            echo "build_target=WebGL" >> $GITHUB_ENV
+          else
+            echo "Error: Invalid build_target_name."
+            exit 1
+          fi
+
+          # ARTIFACT_NAME を設定
+          # GITHUB_ENV への書き込みはジョブ内で即時有効になる
+          ARTIFACT_NAME_VALUE="${{ inputs.build_target_name }}-Build-$(git rev-parse --short HEAD)"
+          echo "ARTIFACT_NAME=${ARTIFACT_NAME_VALUE}" >> $GITHUB_ENV
+
+          # ジョブの outputs 用にアーティファクト名を出力
+          echo "artifact_name=${ARTIFACT_NAME_VALUE}" >> $GITHUB_OUTPUT
+
+      # 次の起動時の高速化のためライブラリをキャッシュ
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: |
+            Library/PackageCache
+            Library/ScriptAssemblies
+            Library/Bee
+            Library/ShaderCache
+          key: Library-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Unity ビルド実行
+      - name: Run the build
+        uses: game-ci/unity-builder@v4
+        env:
+          # 受け取ったシークレットを使う
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          # Set Build Variables ステップで設定した環境変数を参照
+          targetPlatform: ${{ env.build_target }}
+
+      # ビルド成果物をアップロード
+      - name: Upload the Build
+        uses: actions/upload-artifact@v4
+        with:
+          # Set Build Variables ステップで設定した環境変数を参照
+          name: ${{ env.ARTIFACT_NAME }}
+          path: build/${{ env.build_target }}
