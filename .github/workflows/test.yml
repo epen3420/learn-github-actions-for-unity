@@ -14,3 +14,9 @@ jobs:
             echo "--- Checking size of top-level directories:"
             # /mnt と /proc は仮想ファイルシステムなので除外
             sudo du -sh --exclude=/mnt --exclude=/proc /*
+      - name: remove
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
