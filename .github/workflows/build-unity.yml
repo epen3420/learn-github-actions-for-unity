@@ -85,7 +85,6 @@ jobs:
 
       # Unity ビルド実行
       - name: Run the build
-        if: ${{ env.build_target_name }} == WebGL
         uses: game-ci/unity-builder@v4
         env:
           # 受け取ったシークレットを使う
