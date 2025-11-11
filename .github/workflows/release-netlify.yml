@@ -20,6 +20,7 @@ jobs:
     name: Deploy to Netlify
     needs: call_build_webgl
     uses: ./.github/workflows/upload-build-to-repo.yml
+    secrets: inherit
     with:
       artifact_name: ${{ needs.call_build_webgl.outputs.artifact_name }}
       repository_path: epen3420/epen_page
