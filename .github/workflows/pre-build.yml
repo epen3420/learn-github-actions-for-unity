@@ -1,0 +1,32 @@
+name: Pre Build Run
+
+on:
+  workflow_call:
+    outputs:
+        build_id:
+          value: ${{ env.BUILD_ID }}
+
+jobs:
+  pre-build:
+    name: Pre build unity
+    runs-on: ubuntu-latest
+
+    steps:
+      # 仮想環境にUnity Projectを入れる
+      - name: Check out my unity project.
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ビルドファイルに使うHashを変数へ
+      - name: Set outputs
+        id: vars
+        run: echo "BUILD_ID=Windows-Build-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      # 次の起動時の高速化のためライブラリをキャッシュ
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
