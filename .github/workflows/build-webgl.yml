@@ -26,6 +26,14 @@ jobs:
       artifact_name: ${{ env.ARTIFACT_NAME }}
 
     steps:
+      # ビルドが始まる前に、不要なツールを削除してディスクスペースを確保する
+      - name: Free up disk space
+        uses: easimon/maximize-build-space-action@v10
+        with:
+          remove-android: true
+          remove-dotnet: true
+          remove-haskell: true
+
       # 仮想環境にクローン
       - name: Check out my unity project.
         uses: actions/checkout@v4
