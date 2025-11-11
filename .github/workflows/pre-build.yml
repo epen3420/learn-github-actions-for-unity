@@ -4,7 +4,7 @@ on:
   workflow_call:
     outputs:
         build_id:
-          value: ${{ env.BUILD_ID }}
+          value: ${{ jobs.pre-build.outputs.build_id }}
 
 jobs:
   pre-build:
@@ -21,7 +21,7 @@ jobs:
       # ビルドファイルに使うHashを変数へ
       - name: Set outputs
         id: vars
-        run: echo "BUILD_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: echo "build_id=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       # 次の起動時の高速化のためライブラリをキャッシュ
       - uses: actions/cache@v4
