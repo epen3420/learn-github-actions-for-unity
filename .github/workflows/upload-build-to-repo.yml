@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       artifact_name:
+        required: true
         type: string
       repository_path:
         required: true
