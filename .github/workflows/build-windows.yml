@@ -7,7 +7,7 @@ on:
     outputs:
       artifact_name:
         description: "The name of the build artifact"
-        value: Windows-Build-${{ jobs.pre-build.outputs.build_id }}
+        value: ${{ jobs.build.outputs.artifact_name }}
     # 呼び出し元からシークレットを受け取る設定
     secrets:
       UNITY_EMAIL:
@@ -26,12 +26,29 @@ jobs:
     runs-on: ubuntu-latest
     needs: pre-build
 
+    outputs:
+      artifact_name: ${{ env.ARTIFACT_NAME }}
+
     steps:
-      # 仮想環境にUnity Projectを入れる
+      # 仮想環境にクローン
       - name: Check out my unity project.
         uses: actions/checkout@v4
         with:
           lfs: true
+
+      # ビルドファイルに使うHashを変数へ
+      - name: Set outputs
+        id: vars
+        run: echo "ARTIFACT_NAME=Windows-Build-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      # 次の起動時の高速化のためライブラリをキャッシュ
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
 
       - name: Run the Windows build
         uses: game-ci/unity-builder@v4
@@ -46,5 +63,5 @@ jobs:
       - name: Upload the Windows Build
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ needs.pre-build.outputs.build_id }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: build

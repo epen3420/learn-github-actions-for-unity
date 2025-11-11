@@ -16,10 +16,26 @@ jobs:
     uses: ./.github/workflows/build-webgl.yml # ここを書き換えればビルドのメソッドを変えられる
     secrets: inherit
 
-  call_deploy:
-    name: Deploy To Netlify
+  deploy:
+    name: Deploy to Netlify
+    runs-on: ubuntu-latest
     needs: call_build_webgl
-    uses: ./.github/workflows/deploy-netlify.yml
-    with:
+    env:
       ARTIFACT_NAME: ${{ needs.call_build_webgl.outputs.artifact_name }}
-    secrets: inherit
+
+    steps:
+    # Builder で出力した WebGL ビルドをダウンロード
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: build
+
+    # ダウンロードしたビルドファイルをNetlifyへDeploy
+    - name: Deploy to Netlify
+      uses: netlify/actions/cli@master
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_FOR_DEV }}
+      with:
+        args: deploy --dir=build --prod
