@@ -7,26 +7,29 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check disk usage by folder
+      - name: dummy data
         run: |
-            echo "--- Checking overall disk space:"
-            df -h
-            echo "--- Checking size of top-level directories:"
-            # /mnt と /proc は仮想ファイルシステムなので除外
-            sudo du -sh --exclude=/mnt --exclude=/proc /*
-
-      - name: remove
-        uses: easimon/maximize-build-space@master
-        with:
-          remove-dotnet: true
-          remove-android: true
-          remove-haskell: true
-          remove-docker-images: true
-
-      - name: Check disk usage by folder
+          mkdir webgl-build
+          echo "HEllo" >> webgl-build/temp.txt
+      - name: Copy build files to public/unity
         run: |
-            echo "--- Checking overall disk space:"
-            df -h
-            echo "--- Checking size of top-level directories:"
-            # /mnt と /proc は仮想ファイルシステムなので除外
-            sudo du -sh --exclude=/mnt --exclude=/proc /*
+          mkdir -p nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+          rm -rf nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/*
+          cp -r webgl-build/* nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+
+      # 4. 変更をコミットしてプッシュ
+      - name: Commit and push changes
+        run: |
+          cd nextjs-repo
+          git config --global user.name 'GitHub Actions Bot'
+          git config --global user.email 'github-actions-bot@users.noreply.github.com'
+
+          # 変更があるかチェック
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git add .
+          git commit -m "chore(unity): Update WebGL build [skip ci]"
+          git push

@@ -44,12 +44,8 @@ jobs:
     # 3. Next.js リポジトリの public/unity/ にファイルを上書きコピー
     - name: Copy build files to public/unity
       run: |
-        # コピー先のフォルダを作成（存在しない場合）
         mkdir -p nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
-        # フォルダの中身を一度削除（古いビルドを残さないため）
         rm -rf nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/*
-        # ダウンロードしたビルド成果物（webgl-buildの中身）をコピー
-        # （'webgl-build' フォルダには 'Build' と 'TemplateData' が入っている想定）
         cp -r webgl-build/* nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
 
     # 4. 変更をコミットしてプッシュ
