@@ -1,0 +1,59 @@
+name: Release WebGL To Netlify
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        type: string
+      repository_path:
+        required: true
+        type: string
+
+    secrets:
+      DEPLOY_KEY_FOR_NEXTJS_REPO:
+        required: true
+
+jobs:
+  deploy:
+    name: upload-to-repo
+    runs-on: ubuntu-latest
+    env:
+      ARTIFACT_NAME: ${{ inputs.artifact_name }}
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: build
+
+    - name: Checkout target repository
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repository_path }}
+        ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
+        path: target-repo
+
+    - name: Copy build files to public/unity
+      run: |
+        deploy_dir=target-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+        mkdir -p ${deploy_dir}
+        rm -rf ${deploy_dir}/*
+        cp -r build/WebGL/* ${deploy_dir}
+
+    # 4. 変更をコミットしてプッシュ
+    - name: Commit and push changes
+      run: |
+        cd target-repo
+        git config --global user.name 'GitHub Actions Bot'
+        git config --global user.email 'github-actions-bot@users.noreply.github.com'
+
+        # 変更があるかチェック
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "No changes to commit."
+          exit 0
+        fi
+
+        git add .
+        git commit -m "chore(unity): Update WebGL build [skip ci]"
+        git push

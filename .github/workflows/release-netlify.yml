@@ -18,48 +18,8 @@ jobs:
 
   deploy:
     name: Deploy to Netlify
-    runs-on: ubuntu-latest
     needs: call_build_webgl
-    env:
-      ARTIFACT_NAME: ${{ needs.call_build_webgl.outputs.artifact_name }}
-
-    steps:
-    # Builder で出力した WebGL ビルドをダウンロード
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: ${{ env.ARTIFACT_NAME }}
-        path: build
-
-    # ダウンロードしたビルドファイルをNetlifyへDeploy
-    - name: Checkout Next.js repository
-      uses: actions/checkout@v4
-      with:
-        repository: epen3420/epen_page
-        ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
-        path: nextjs-repo
-
-    # 3. Next.js リポジトリの public/unity/ にファイルを上書きコピー
-    - name: Copy build files to public/unity
-      run: |
-        deploy_dir=nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
-        mkdir -p ${deploy_dir}
-        rm -rf ${deploy_dir}/*
-        cp -r build/* ${deploy_dir}
-
-    # 4. 変更をコミットしてプッシュ
-    - name: Commit and push changes
-      run: |
-        cd nextjs-repo
-        git config --global user.name 'GitHub Actions Bot'
-        git config --global user.email 'github-actions-bot@users.noreply.github.com'
-
-        # 変更があるかチェック
-        if [ -z "$(git status --porcelain)" ]; then
-          echo "No changes to commit."
-          exit 0
-        fi
-
-        git add .
-        git commit -m "chore(unity): Update WebGL build [skip ci]"
-        git push
+    uses: ./.github/workflows/upload-build-to-repo.yml
+    with:
+      artifact_name: ${{ needs.call_build_webgl.outputs.artifact_name }}
+      repository_path: epen3420/epen_page

@@ -4,41 +4,9 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: dummy data
-        run: |
-          mkdir webgl-build
-          echo "HEllo" >> webgl-build/temp.txt
-
-      - name: Checkout Next.js repository
-        uses: actions/checkout@v4
-        with:
-          repository: epen3420/epen_page
-          ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
-          path: nextjs-repo
-
-      - name: Copy build files to public/unity
-        run: |
-          mkdir -p nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
-          rm -rf nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/*
-          cp -r webgl-build/* nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
-
-      # 4. 変更をコミットしてプッシュ
-      - name: Commit and push changes
-        run: |
-          cd nextjs-repo
-          echo "$(ls -a)"
-          git config --global user.name 'GitHub Actions Bot'
-          git config --global user.email 'github-actions-bot@users.noreply.github.com'
-
-          # 変更があるかチェック
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
-          git add .
-          git commit -m "chore(unity): Update WebGL build [skip ci]"
-          git push
+  deploy:
+    name: Deploy to Netlify
+    uses: ./.github/workflows/upload-build-to-repo.yml
+    with:
+      artifact_name: WebGL-Build-ea9bd5d
+      repository_path: epen3420/epen_page

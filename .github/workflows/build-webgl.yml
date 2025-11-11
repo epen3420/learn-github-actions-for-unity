@@ -41,8 +41,12 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          path: |
+            Library/PackageCache
+            Library/ScriptAssemblies
+            Library/Bee
+            Library/ShaderCache
+          key: Library-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
