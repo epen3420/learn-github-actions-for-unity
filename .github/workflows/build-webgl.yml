@@ -60,8 +60,12 @@ jobs:
         with:
           targetPlatform: WebGL
 
+      - run: |
+          echo "$(ls ~)"
+          echo "$(ls ~/WebGL)"
+
       - name: Upload the WebGL Build
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: build
+          path: build/WebGL
