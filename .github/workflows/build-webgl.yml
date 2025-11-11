@@ -50,6 +50,7 @@ jobs:
   build:
     name: Run the WebGL build
     runs-on: ubuntu-latest
+    needs: pre-build
 
     outputs:
       artifact_name: ${{ env.ARTIFACT_NAME }}
