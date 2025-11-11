@@ -35,18 +35,17 @@ jobs:
     - name: Checkout Next.js repository
       uses: actions/checkout@v4
       with:
-        # ★★★ ここにNext.jsリポジトリのSSH URLを指定 ★★★
-        repository: git@github.com:epen3420/epen_page.git
+        repository: epen3420/epen_page
         ssh-key: ${{ secrets.DEPLOY_KEY_FOR_NEXTJS_REPO }}
         path: nextjs-repo
-        # lfs: true
 
     # 3. Next.js リポジトリの public/unity/ にファイルを上書きコピー
     - name: Copy build files to public/unity
       run: |
-        mkdir -p nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
-        rm -rf nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}/*
-        cp -r webgl-build/* nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+        deploy_dir=nextjs-repo/public/unity/${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}
+        mkdir -p ${deploy_dir}
+        rm -rf ${deploy_dir}/*
+        cp -r build/* ${deploy_dir}
 
     # 4. 変更をコミットしてプッシュ
     - name: Commit and push changes
