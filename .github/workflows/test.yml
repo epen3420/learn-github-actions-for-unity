@@ -5,9 +5,9 @@ on:
 
 jobs:
   test:
+    runs-on: ubuntu-latest
     steps:
       - name: Check disk usage by folder
-        runs-on: ubuntu-latest
         run: |
             echo "--- Checking overall disk space:"
             df -h
