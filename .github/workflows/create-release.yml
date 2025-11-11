@@ -14,12 +14,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check pr name
-        if: startsWith(github.event.pull_request.head.ref, 'release/') == false
-        run: |
-          echo "PR name is invalid. Please rename release/"
-          exit 1
-
       - name: Set env variables
         run: |
           echo "ARTIFACT_NAME=${{ inputs.ARTIFACT_NAME }}" >> $GITHUB_ENV

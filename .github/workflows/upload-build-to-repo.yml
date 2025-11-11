@@ -24,6 +24,12 @@ jobs:
       ARTIFACT_NAME: ${{ inputs.artifact_name }}
 
     steps:
+    - name: Set enb
+      run: |
+          branch_name="${{ github.event.pull_request.head.ref }}"
+          version_tag=$(echo "${branch_name}" | sed 's/release\///')
+          echo "VERSION_TAG=${version_tag}" >> $GITHUB_ENV
+
     - name: Download artifact
       if: inputs.run_id != ''
       uses: actions/download-artifact@v4
@@ -69,5 +75,5 @@ jobs:
         fi
 
         git add .
-        git commit -m "chore(unity): Update WebGL build [skip ci]"
+        git commit -m "release(unity): Release ${{ env.VERSION_TAG }} "
         git push

@@ -11,6 +11,7 @@ jobs:
     name: Build
     if: >
       github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/') == true &&
       contains(github.event.pull_request.labels.*.name, 'release/Windows')
     uses: ./.github/workflows/build-unity.yml # ここを書き換えればビルドのメソッドを変えられる
     secrets: inherit
