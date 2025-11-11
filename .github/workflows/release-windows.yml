@@ -7,7 +7,7 @@ on:
     types: [closed]
 
 jobs:
-  call_build:
+  call_build_windows:
     name: Build
     if: >
       github.event.pull_request.merged == true &&
@@ -17,7 +17,7 @@ jobs:
 
   call_release:
     name: Release
-    needs: call_build
+    needs: call_build_windows
     uses: ./.github/workflows/create-release.yml
     with:
-      ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
+      ARTIFACT_NAME: ${{ needs.call_build_windows.outputs.artifact_name }}

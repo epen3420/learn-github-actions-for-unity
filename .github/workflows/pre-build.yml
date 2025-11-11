@@ -11,6 +11,9 @@ jobs:
     name: Pre build unity
     runs-on: ubuntu-latest
 
+    outputs:
+      build_id: ${{ steps.vars.outputs.build_id }}
+
     steps:
       # 仮想環境にUnity Projectを入れる
       - name: Check out my unity project.
