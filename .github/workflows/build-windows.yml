@@ -7,7 +7,7 @@ on:
     outputs:
       artifact_name:
         description: "The name of the build artifact"
-        value: ${{ jobs.pre-build.outputs.build_id }}
+        value: Windows-Build-${{ jobs.pre-build.outputs.build_id }}
     # 呼び出し元からシークレットを受け取る設定
     secrets:
       UNITY_EMAIL:

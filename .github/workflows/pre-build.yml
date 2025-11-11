@@ -21,7 +21,7 @@ jobs:
       # ビルドファイルに使うHashを変数へ
       - name: Set outputs
         id: vars
-        run: echo "BUILD_ID=Windows-Build-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        run: echo "BUILD_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       # 次の起動時の高速化のためライブラリをキャッシュ
       - uses: actions/cache@v4
