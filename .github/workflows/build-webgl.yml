@@ -26,6 +26,14 @@ jobs:
       artifact_name: ${{ env.ARTIFACT_NAME }}
 
     steps:
+      - name: remove
+          uses: easimon/maximize-build-space@master
+          with:
+            remove-dotnet: true
+            remove-android: true
+            remove-haskell: true
+            remove-docker-images: true
+
       # 仮想環境にクローン
       - name: Check out my unity project.
         uses: actions/checkout@v4
