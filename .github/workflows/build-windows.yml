@@ -19,7 +19,7 @@ on:
 
 jobs:
   pre-build:
-    uses: ./github/workflows/pre-build.yml
+    uses: ./.github/workflows/pre-build.yml
 
   build:
     name: Run the Windows build
