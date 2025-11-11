@@ -76,9 +76,9 @@ jobs:
         with:
           path: |
             Library/PackageCache
-            Library/ScriptAssemblies
-            Library/Bee
-            Library/ShaderCache
+            # Library/ScriptAssemblies
+            # Library/Bee
+            # Library/ShaderCache
           key: Library-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
