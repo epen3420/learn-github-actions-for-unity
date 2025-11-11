@@ -8,6 +8,9 @@ on:
       repository_path:
         required: true
         type: string
+      run_id:
+        required: false
+        type: string
 
     secrets:
       DEPLOY_KEY_FOR_NEXTJS_REPO:
@@ -22,10 +25,20 @@ jobs:
 
     steps:
     - name: Download artifact
+      if: inputs.run_id != ''
       uses: actions/download-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
         path: build
+        run-id: ${{ inputs.run_id }}
+
+    - name: Download artifact
+      if: inputs.run_id == ''
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ env.ARTIFACT_NAME }}
+        path: build
+
 
     - name: Checkout target repository
       uses: actions/checkout@v4
