@@ -12,6 +12,9 @@ on:
       run_id:
         required: false
         type: string
+      version_tag:
+        required: false
+        type: string
 
     secrets:
       DEPLOY_KEY_FOR_NEXTJS_REPO:
@@ -25,11 +28,19 @@ jobs:
       ARTIFACT_NAME: ${{ inputs.artifact_name }}
 
     steps:
-    - name: Set enb
+    - name: Set Version Tag
       run: |
+        # inputs.version_tag が空かどうかをチェック
+        if [ -z "${{ inputs.version_tag }}" ]; then
+          echo "inputs.version_tag is not set. Deriving tag from PR branch..."
           branch_name="${{ github.event.pull_request.head.ref }}"
           version_tag=$(echo "${branch_name}" | sed 's/release\///')
           echo "VERSION_TAG=${version_tag}" >> $GITHUB_ENV
+
+        else
+          echo "inputs.version_tag is set. Using value: ${{ inputs.version_tag }}"
+          echo "VERSION_TAG=${{ inputs.version_tag }}" >> $GITHUB_ENV
+        fi
 
     - name: Download artifact
       if: inputs.run_id != ''
