@@ -74,23 +74,20 @@ jobs:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         with:
-          # trueにすると、大容量のDockerイメージも削除対象になる
-          docker-images: true
-          # trueにすると、Android NDK/SDKツール群を削除する
-          android: true
-          # trueにすると、dotnet SDKの古いバージョンを削除する
+          tool-cache: true # node.jsを使う場合はfalse
+          android: true # androidビルドの場合はfalse
           dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       # 次の起動時の高速化のためライブラリをキャッシュ
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: |
-            Library/PackageCache
-            # Library/ScriptAssemblies
-            # Library/Bee
-            # Library/ShaderCache
-          key: Library-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/**') }}
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }
           restore-keys: |
             Library-
 
