@@ -21,6 +21,6 @@ jobs:
   call_release:
     name: Release
     needs: call_build_windows
-    uses: ./.github/workflows/create-release.yml
+    uses: ./.github/workflows/create-release-note.yml
     with:
       ARTIFACT_NAME: ${{ needs.call_build_windows.outputs.artifact_name }}
