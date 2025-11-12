@@ -1,0 +1,15 @@
+name: GitHub Event Handler
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  release:
+    name: release
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/') == true &&
+      contains(github.event.pull_request.labels.*.name, 'release/WebGL')
