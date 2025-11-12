@@ -85,7 +85,6 @@ jobs:
           android: true # androidビルドの場合はfalse
           dotnet: true
           haskell: true
-          large-packages: true
           docker-images: true
           swap-storage: true
 
