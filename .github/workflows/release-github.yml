@@ -19,9 +19,25 @@ jobs:
     with:
       build_target_name: Windows
 
+  set_var:
+    name: Set variables
+    runs-on: ubuntu-latest
+    needs: call_build_windows
+
+    outputs:
+      version_tag: ${{ steps.set_version.outputs.version_tag }}
+
+    steps:
+      - name: Set version tag
+      - id: set_version
+      - run: |
+          branch_name="${{ github.event.pull_request.head.ref }}"
+          echo version_tag=$(echo "${branch_name}" | sed 's/release\///') >> $GITHUB_OUTPUT
+
   call_release:
     name: Release
-    needs: call_build_windows
+    needs: [call_build_windows, set_var]
     uses: ./.github/workflows/create-release-note.yml
     with:
       ARTIFACT_NAME: ${{ needs.call_build_windows.outputs.artifact_name }}
+      VERSION_TAG: ${{ needs.set_var.outputs.version_tag }}
