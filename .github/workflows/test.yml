@@ -42,10 +42,10 @@ jobs:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false # node.jsを使う場合はfalse
+          tool-cache: ${{ inputs.tool }} # node.jsを使う場合はfalse
           android: false # androidビルドの場合はfalse
-          dotnet: true
-          haskell: true
-          docker-images: false
-          swap-storage: false
-          large-packages: false
+          dotnet: ${{ inputs.dotnet }}
+          haskell: ${{ inputs.haskell }}
+          docker-images: ${{ inputs.docker }}
+          swap-storage: ${{ inputs.swap }}
+          large-packages: ${{ inputs.large }}
