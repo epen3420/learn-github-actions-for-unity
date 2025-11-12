@@ -70,6 +70,10 @@ jobs:
           # ジョブの outputs 用にアーティファクト名を出力
           echo "artifact_name=${ARTIFACT_NAME_VALUE}" >> $GITHUB_OUTPUT
 
+      - name:
+        run: |
+          df -h
+
       # 次の起動時の高速化のためライブラリをキャッシュ
       - name: Cache Library
         uses: actions/cache@v4
@@ -82,6 +86,10 @@ jobs:
           key: Library-${{ hashFiles('Packages/packages-lock.json', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
+
+      - name:
+        run: |
+          df -h
 
       # Unity ビルド実行
       - name: Run the build
