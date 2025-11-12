@@ -98,6 +98,24 @@ jobs:
           restore-keys: |
             Library-
 
+      - name: Cache UPM
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/unity3d/packages
+          # manifest.json と lockファイルがキー
+          key: UPM-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
+          restore-keys: |
+            UPM-
+
+      - name: Cache IL2CPP
+        uses: actions/cache@v4
+        with:
+          path: ~/.config/unity3d/cache/il2cpp
+          # ソースコードや設定が変わったらキーも変わるようにする
+          key: IL2CPP-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            IL2CPP-
+
       # Unity ビルド実行
       - name: Run the build
         uses: game-ci/unity-builder@v4
