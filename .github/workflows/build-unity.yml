@@ -70,11 +70,16 @@ jobs:
           # ジョブの outputs 用にアーティファクト名を出力
           echo "artifact_name=${ARTIFACT_NAME_VALUE}" >> $GITHUB_OUTPUT
 
-      - name:
-        run: |
-          df -h # 空き容量をログで確認
-          sudo apt-get clean
-          docker rmi $(docker images -q) || true # 既存のDockerイメージを削除
+      # Unityビルドの前にランナーの空き容量を確保する
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # trueにすると、大容量のDockerイメージも削除対象になる
+          docker-images: true
+          # trueにすると、Android NDK/SDKツール群を削除する
+          android: true
+          # trueにすると、dotnet SDKの古いバージョンを削除する
+          dotnet: true
 
       # 次の起動時の高速化のためライブラリをキャッシュ
       - name: Cache Library
