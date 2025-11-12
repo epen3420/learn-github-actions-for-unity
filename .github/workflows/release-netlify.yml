@@ -1,19 +1,23 @@
 name: Release WebGL Build To Netlify
 
 on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
+  workflow_call:
+    inputs:
+      version_tag:
+        description: 'Release Version Tag (e.g., 1.0.1)'
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release Version Tag (e.g., 1.0.1)'
+        required: true
+        type: string
 
 jobs:
   call_build_webgl:
     name: Build WebGL
-    # マージ、ブランチ名がrelease/*、labelsにrelease/WebGLがある
-    if: >
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/') == true &&
-      contains(github.event.pull_request.labels.*.name, 'release/WebGL')
     uses: ./.github/workflows/build-unity.yml
     secrets: inherit
     with:
@@ -28,3 +32,4 @@ jobs:
       artifact_name: ${{ needs.call_build_webgl.outputs.artifact_name }}
       repository_path: epen3420/epen_page
       target_dir: public/unity
+      version_tag: ${{ inputs.version_tag }}

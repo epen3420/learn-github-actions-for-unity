@@ -7,9 +7,39 @@ on:
     types: [closed]
 
 jobs:
-  release:
+  pr_check:
     name: release
     if: >
       github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/') == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/') == true
+
+  set_version:
+    name: set version variables
+    runs-on: ubuntu-latest
+    outputs:
+      version_tag: ${{ steps.var.outputs.version_tag }}
+
+    steps:
+      id: var
+      run: |
+        branch_name="${{ github.event.pull_request.head.ref }}"
+        echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_ENV
+
+  call_release_windows_to_github:
+    name: Call release Windows build to GitHub
+    needs: [pr_check, set_version]
+    if: >
+      contains(github.event.pull_request.labels.*.name, 'release/Windows')
+    uses: ./.github/workflows/release-github.yml
+    with:
+      build_target_name: Windows
+      version_tag: ${{ needs.set_version.outputs.version_tag }}
+
+  call_release_webgl_to_netlify:
+    name: Call release WebGL build to Netlify
+    needs: [pr_check, set_version]
+    if: >
       contains(github.event.pull_request.labels.*.name, 'release/WebGL')
+    uses: ./.github/workflows/release-netlify.yml
+    with:
+      version_tag: ${{ needs.set_version.outputs.version_tag }}
