@@ -93,10 +93,18 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: [Library, Packages]
-          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
+
+      - name: Cache Packages
+        uses: actions/cache@v4
+        with:
+          path: Packages
+          key: Packages-${{ hashFiles('Packages/**') }}
+          restore-keys: |
+            Packages-
 
       # Unity ビルド実行
       - name: Run the build
