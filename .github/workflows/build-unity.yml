@@ -86,7 +86,7 @@ jobs:
           dotnet: true
           haskell: true
           docker-images: false
-          swap-storage: true
+          swap-storage: false
           large-packages: false
 
       # 次の起動時の高速化のためライブラリをキャッシュ
