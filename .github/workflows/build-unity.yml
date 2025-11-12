@@ -98,23 +98,19 @@ jobs:
           restore-keys: |
             Library-
 
-      - name: Cache UPM
+      - name: Cache Emscripten
         uses: actions/cache@v4
         with:
-          path: ~/.cache/unity3d/packages
-          # manifest.json と lockファイルがキー
-          key: UPM-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
-          restore-keys: |
-            UPM-
+          path: ~/.emscripten_cache
+          key: emscripten-${{ runner.os }}-${{ env.UNITY_VERSION }}
 
-      - name: Cache IL2CPP
+
+      - name: Cache Unity Packages
         uses: actions/cache@v4
         with:
-          path: ~/.config/unity3d/cache/il2cpp
-          # ソースコードや設定が変わったらキーも変わるようにする
-          key: IL2CPP-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            IL2CPP-
+          path: ~/.cache/unity3d
+          key: UPM-${{ runner.os }}-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
+
 
       # Unity ビルド実行
       - name: Run the build
