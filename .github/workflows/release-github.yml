@@ -1,43 +1,46 @@
-name: Release Windows Build To GitHub Release
+name: Release To GitHub Release (Windows/WebGL)
 
 on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
+  workflow_call:
+    inputs:
+      build_target_name:
+        description: 'Choose Windows or WebGL'
+        required: true
+        type: string
+      version_tag:
+        description: 'Release Version Tag (e.g., 1.0.1)'
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      build_target_name:
+        description: 'Choose Windows or WebGL'
+        required: true
+        type: choice
+        options:
+          - Windows
+          - WebGL
+        default: 'Windows'
+      version_tag:
+        description: 'Release Version Tag (e.g., 1.0.1)'
+        required: true
+        type: string
 
 jobs:
-  call_build_windows:
-    name: Build
-    # マージ、ブランチ名がrelease/*、labelsにrelease/WebGLがある
-    if: >
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/') == true &&
-      contains(github.event.pull_request.labels.*.name, 'release/Windows')
-    uses: ./.github/workflows/build-unity.yml # ここを書き換えればビルドのメソッドを変えられる
+  call_build:
+    name: Build ${{ inputs.build_target_name }}
+    uses: ./.github/workflows/build-unity.yml
     secrets: inherit
     with:
-      build_target_name: Windows
-
-  set_var:
-    name: Set variables
-    runs-on: ubuntu-latest
-    needs: call_build_windows
-
-    outputs:
-      version_tag: ${{ steps.set_version.outputs.version_tag }}
-
-    steps:
-      - name: Set version tag
-        id: set_version
-        run: |
-          branch_name="${{ github.event.pull_request.head.ref }}"
-          echo version_tag=$(echo "${branch_name}" | sed 's/release\///') >> $GITHUB_OUTPUT
+      build_target_name: ${{ inputs.build_target_name }}
 
   call_release:
     name: Release
-    needs: [call_build_windows, set_var]
+    needs: [call_build]
+
     uses: ./.github/workflows/create-release-note.yml
+    secrets: inherit
     with:
-      ARTIFACT_NAME: ${{ needs.call_build_windows.outputs.artifact_name }}
-      VERSION_TAG: ${{ needs.set_var.outputs.version_tag }}
+      ARTIFACT_NAME: ${{ needs.call_build.outputs.artifact_name }}
+      VERSION_TAG: ${{ inputs.version_tag }}
