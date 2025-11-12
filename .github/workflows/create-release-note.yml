@@ -1,4 +1,4 @@
-name: Create release note
+name: Create GitHub Release Note
 
 on:
   workflow_call:

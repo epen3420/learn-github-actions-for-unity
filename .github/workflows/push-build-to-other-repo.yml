@@ -1,4 +1,4 @@
-name: Push build to other repository
+name: Push Build To Other Repository
 
 on:
   workflow_call:
