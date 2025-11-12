@@ -52,7 +52,6 @@ jobs:
         name: ${{ env.ARTIFACT_NAME }}
         path: build
         run-id: ${{ inputs.run_id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Checkout target repository
       uses: actions/checkout@v4
