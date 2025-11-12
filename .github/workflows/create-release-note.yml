@@ -25,7 +25,7 @@ on:
 
 jobs:
   create_release:
-    name: Create Release
+    name: Create github release note
     runs-on: ubuntu-latest
     env:
       ZIP_FILE_NAME: ${{ github.event.repository.name }}-${{ inputs.VERSION_TAG }}.zip
@@ -40,8 +40,7 @@ jobs:
       - name: Zip build files
         run: zip -r ${{ env.ZIP_FILE_NAME }} ./${{ inputs.ARTIFACT_NAME }}
 
-      - name: Create Release
-        id: create_release
+      - name: Create release
         uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
