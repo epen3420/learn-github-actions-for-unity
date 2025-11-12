@@ -81,7 +81,7 @@ jobs:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: true # node.jsを使う場合はfalse
+          tool-cache: false # node.jsを使う場合はfalse
           android: false # androidビルドの場合はfalse
           dotnet: true
           haskell: true
@@ -93,7 +93,7 @@ jobs:
       - name: Cache Library
         uses: actions/cache@v4
         with:
-          path: Library
+          path: [Library, Packages]
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
@@ -111,10 +111,6 @@ jobs:
           targetPlatform: ${{ env.build_target }}
           allowDirtyBuild: true
           customParameters: ${{ env.build_custom_parameters }}
-
-      - name: ab
-        run: |
-          ls -R -a
 
       # ビルド成果物をアップロード
       - name: Upload the Build
