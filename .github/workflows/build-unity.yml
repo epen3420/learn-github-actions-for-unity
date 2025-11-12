@@ -119,3 +119,5 @@ jobs:
           # Set Build Variables ステップで設定した環境変数を参照
           name: ${{ env.ARTIFACT_NAME }}
           path: build/${{ env.build_target }}
+      - name: a
+        run: dh -h
