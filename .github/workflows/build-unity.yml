@@ -81,12 +81,12 @@ jobs:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         with:
-          tool-cache: false # node.jsを使う場合はfalse
+          tool-cache: true # node.jsを使う場合はfalse
           android: false # androidビルドの場合はfalse
-          dotnet: false
+          dotnet: true
           haskell: true
-          docker-images: false
-          swap-storage: false
+          docker-images: true
+          swap-storage: true
           large-packages: false
 
       # 次の起動時の高速化のためライブラリをキャッシュ
