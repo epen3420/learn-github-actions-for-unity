@@ -29,8 +29,8 @@ jobs:
 
     steps:
       - name: Set version tag
-      - id: set_version
-      - run: |
+        id: set_version
+        run: |
           branch_name="${{ github.event.pull_request.head.ref }}"
           echo version_tag=$(echo "${branch_name}" | sed 's/release\///') >> $GITHUB_OUTPUT
 
