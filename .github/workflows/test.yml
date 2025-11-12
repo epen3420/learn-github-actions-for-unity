@@ -6,9 +6,6 @@ on:
       tool:
         required: true
         type: boolean
-      android:
-        required: true
-        type: boolean
       dotnet:
         required: true
         type: boolean
