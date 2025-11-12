@@ -120,4 +120,5 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/${{ env.build_target }}
       - name: a
-        run: dh -h
+        run: |
+          echo $(df -h)
