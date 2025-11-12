@@ -1,0 +1,54 @@
+name: test
+
+on:
+  workflow_dispatch:
+    inputs:
+      tool:
+        required: true
+        type: boolean
+      android:
+        required: true
+        type: boolean
+      dotnet:
+        required: true
+        type: boolean
+      haskell:
+        required: true
+        type: boolean
+      docker:
+        required: true
+        type: boolean
+      swap:
+        required: true
+        type: boolean
+      large:
+        required: true
+        type: boolean
+
+
+jobs:
+  build:
+    name: Run the build for ${{ inputs.build_target_name }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      artifact_name: ${{ steps.vars.outputs.artifact_name }}
+
+    steps:
+      # 仮想環境にクローン
+      - name: Check out my unity project
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Unityビルドの前にランナーの空き容量を確保する
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false # node.jsを使う場合はfalse
+          android: false # androidビルドの場合はfalse
+          dotnet: true
+          haskell: true
+          docker-images: false
+          swap-storage: false
+          large-packages: false
