@@ -98,28 +98,6 @@ jobs:
           restore-keys: |
             Library-
 
-      - name: Cache Emscripten
-        uses: actions/cache@v4
-        with:
-          path: ~/.emscripten_cache
-          key: emscripten-${{ runner.os }}-${{ env.UNITY_VERSION }}
-
-
-      - name: Cache Unity Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/unity3d
-          key: UPM-${{ runner.os }}-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
-
-      - name: Cache UPM
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/unity3d/PackageManager
-          key: ${{ runner.os }}-upm-cache-${{ hashFiles('Packages/packages-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-upm-cache-
-
-
       # Unity ビルド実行
       - name: Run the build
         uses: game-ci/unity-builder@v4
@@ -136,7 +114,7 @@ jobs:
 
       - name: ab
         run: |
-          ls -R
+          ls -R -a
 
       # ビルド成果物をアップロード
       - name: Upload the Build
@@ -145,6 +123,7 @@ jobs:
           # Set Build Variables ステップで設定した環境変数を参照
           name: ${{ env.ARTIFACT_NAME }}
           path: build/${{ env.build_target }}
+
       - name: a
         run: |
           echo $(df -h)
