@@ -1,4 +1,4 @@
-name: Release Build (Windows)
+name: Release Windows Build To GitHub Release
 
 on:
   pull_request:
@@ -9,6 +9,7 @@ on:
 jobs:
   call_build_windows:
     name: Build
+    # マージ、ブランチ名がrelease/*、labelsにrelease/WebGLがある
     if: >
       github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.head.ref, 'release/') == true &&

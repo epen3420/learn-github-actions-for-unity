@@ -1,4 +1,4 @@
-name: Release WebGL To Netlify
+name: Release WebGL Build To Netlify
 
 on:
   pull_request:
@@ -8,7 +8,8 @@ on:
 
 jobs:
   call_build_webgl:
-    name: Build
+    name: Build WebGL
+    # マージ、ブランチ名がrelease/*、labelsにrelease/WebGLがある
     if: >
       github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.head.ref, 'release/') == true &&
@@ -21,7 +22,7 @@ jobs:
   deploy:
     name: Deploy to Netlify
     needs: call_build_webgl
-    uses: ./.github/workflows/upload-build-to-repo.yml
+    uses: ./.github/workflows/push-build-to-other-repo.yml
     secrets: inherit
     with:
       artifact_name: ${{ needs.call_build_webgl.outputs.artifact_name }}
