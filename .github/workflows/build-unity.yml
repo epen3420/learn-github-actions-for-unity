@@ -72,7 +72,9 @@ jobs:
 
       - name:
         run: |
-          df -h
+          df -h # 空き容量をログで確認
+          sudo apt-get clean
+          docker rmi $(docker images -q) || true # 既存のDockerイメージを削除
 
       # 次の起動時の高速化のためライブラリをキャッシュ
       - name: Cache Library
