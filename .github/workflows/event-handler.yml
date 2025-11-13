@@ -13,7 +13,7 @@ jobs:
     # PRがマージ、labelがrelease/*
     if: >
       github.event.pull_request.merged == true &&
-      contains(github.event.pull_request.labels.*.name, 'release/') == true
+      contains(github.event.pull_request.labels.*.name, 'release/*') == true
 
     outputs:
       version_tag: ${{ steps.var.outputs.version_tag }}
