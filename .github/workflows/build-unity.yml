@@ -104,9 +104,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build/
-          key: Build-${{ hashFiles('Build/**') }}
+          key: ${{ env.build_target }}-Build-${{ hashFiles('Build/**') }}
           restore-keys: |
-            Build-
+            ${{ env.build_target }}-Build-
 
       # Unity ビルド実行
       - name: Run the build
