@@ -13,7 +13,7 @@ jobs:
     # PRがマージ、ブランチ名がrelease/*
     if: >
       github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/') == true
+      startsWith(github.event.pull_request.labels.*.name, 'release/') == true
 
     # release/のあとをversion_tagとして出力
     outputs:
@@ -23,7 +23,14 @@ jobs:
       - id: var
         run: |
           branch_name="${{ github.event.pull_request.head.ref }}"
-          echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_OUTPUT
+          if [[ "${branch_name}" == release/* ]]; then
+            # 'release/' で始まる場合、'release/' を削除する
+            version_tag=$(echo "${branch_name}" | sed 's/release\///')
+          else
+            # 'release/' で始まらない場合、ブランチ名をそのまま使う
+            version_tag="${branch_name}"
+          fi
+          echo "version_tag=${version_tag}" >> $GITHUB_OUTPUT
 
   # labelがrelease/Windowの時実行行
   call_release_windows_to_github:
