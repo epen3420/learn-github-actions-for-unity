@@ -94,19 +94,11 @@ jobs:
       - name: Cache Packages
         uses: actions/cache@v4
         with:
-          path: Library/PackageCache
+          path: Packages
           # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
           key: Packages-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
           restore-keys: |
             Packages-
-
-      - name: Cache build
-        uses: actions/cache@v4
-        with:
-          path: build/
-          key: ${{ env.build_target }}-Build-${{ hashFiles('Build/**') }}
-          restore-keys: |
-            ${{ env.build_target }}-Build-
 
       # Unity ビルド実行
       - name: Run the build
