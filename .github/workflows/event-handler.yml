@@ -10,29 +10,27 @@ jobs:
   init:
     name: Check conditions and Set version variables
     runs-on: ubuntu-latest
-    # PRがマージ、ブランチ名がrelease/*
+    # PRがマージ、labelがrelease/*
     if: >
       github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.labels.*.name, 'release/') == true
 
-    # release/のあとをversion_tagとして出力
     outputs:
       version_tag: ${{ steps.var.outputs.version_tag }}
 
     steps:
       - id: var
+        # version_tag = ブランチ名がrelease/*の場合その後を使い、それ以外はそのまま
         run: |
           branch_name="${{ github.event.pull_request.head.ref }}"
           if [[ "${branch_name}" == release/* ]]; then
-            # 'release/' で始まる場合、'release/' を削除する
             version_tag=$(echo "${branch_name}" | sed 's/release\///')
           else
-            # 'release/' で始まらない場合、ブランチ名をそのまま使う
             version_tag="${branch_name}"
           fi
           echo "version_tag=${version_tag}" >> $GITHUB_OUTPUT
 
-  # labelがrelease/Windowの時実行行
+  # labelがrelease/Windowの時実行
   call_release_windows_to_github:
     name: Call release Windows build to GitHub
     needs: init
