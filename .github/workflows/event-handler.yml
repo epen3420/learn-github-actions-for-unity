@@ -9,14 +9,15 @@ on:
 jobs:
   pr_check:
     name: release
-    if: >
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/') == true
+    
     outputs: {}
 
   set_version:
     name: set version variables
     runs-on: ubuntu-latest
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/') == true
     outputs:
       version_tag: ${{ steps.var.outputs.version_tag }}
 
