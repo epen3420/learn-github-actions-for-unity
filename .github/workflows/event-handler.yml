@@ -17,10 +17,10 @@ jobs:
       version_tag: ${{ steps.var.outputs.version_tag }}
 
     steps:
-      id: var
-      run: |
-        branch_name="${{ github.event.pull_request.head.ref }}"
-        echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_ENV
+      - id: var
+        run: |
+          branch_name="${{ github.event.pull_request.head.ref }}"
+          echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_ENV
 
   call_release_windows_to_github:
     name: Call release Windows build to GitHub
