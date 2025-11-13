@@ -89,20 +89,13 @@ jobs:
           dotnet: true
           haskell: true
 
-      # 次の起動時の高速化のためライブラリをキャッシュ
-      - name: Cache Library
-        uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-${{ hashFiles('Assets/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
+      # 次回起動時の高速化ためパッケージをキャッシュ
       - name: Cache Packages
         uses: actions/cache@v4
         with:
-          path: Packages
-          key: Packages-${{ hashFiles('Packages/**') }}
+          path: Library/PackageCache
+          # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
+          key: Packages-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
           restore-keys: |
             Packages-
 
