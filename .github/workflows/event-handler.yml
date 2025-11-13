@@ -23,7 +23,7 @@ jobs:
       - id: var
         run: |
           branch_name="${{ github.event.pull_request.head.ref }}"
-          echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_ENV
+          echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_OUTPUT
 
   # labelがrelease/Windowの時実行行
   call_release_windows_to_github:
@@ -34,7 +34,7 @@ jobs:
     uses: ./.github/workflows/release-github.yml
     with:
       build_target_name: Windows
-      version_tag: ${{ needs.set_version.outputs.version_tag }}
+      version_tag: ${{ needs.init.outputs.version_tag }}
 
   # labelがrelease/WebGLの時実行
   call_release_webgl_to_netlify:
@@ -44,4 +44,4 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'release/WebGL')
     uses: ./.github/workflows/release-netlify.yml
     with:
-      version_tag: ${{ needs.set_version.outputs.version_tag }}
+      version_tag: ${{ needs.init.outputs.version_tag }}
