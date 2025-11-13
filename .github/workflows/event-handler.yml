@@ -7,11 +7,6 @@ on:
     types: [closed]
 
 jobs:
-  pr_check:
-    name: release
-    
-    outputs: {}
-
   set_version:
     name: set version variables
     runs-on: ubuntu-latest
