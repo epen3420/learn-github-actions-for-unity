@@ -95,6 +95,15 @@ jobs:
           echo $(du -h)
 
       # 次回起動時の高速化ためパッケージをキャッシュ
+      - name: Cache Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
+          key: Library-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
+          restore-keys: |
+            Library-
+
       - name: Cache Packages
         uses: actions/cache@v4
         with:
