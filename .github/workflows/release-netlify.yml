@@ -1,0 +1,35 @@
+name: Release WebGL Build To Netlify
+
+on:
+  workflow_call:
+    inputs:
+      version_tag:
+        description: 'Release Version Tag (e.g., 1.0.1)'
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Release Version Tag (e.g., 1.0.1)'
+        required: true
+        type: string
+
+jobs:
+  call_build_webgl:
+    name: Build WebGL
+    uses: ./.github/workflows/build-unity.yml
+    secrets: inherit
+    with:
+      build_target_name: WebGL
+
+  deploy:
+    name: Deploy to Netlify
+    needs: call_build_webgl
+    uses: ./.github/workflows/push-build-to-other-repo.yml
+    secrets: inherit
+    with:
+      artifact_name: ${{ needs.call_build_webgl.outputs.artifact_name }}
+      repository_path: epen3420/epen_page
+      target_dir: public/unity
+      version_tag: ${{ inputs.version_tag }}
