@@ -90,6 +90,10 @@ jobs:
           dotnet: true
           haskell: true
 
+      - name: a
+        run: |
+          echo $(du -h)
+
       # 次回起動時の高速化ためパッケージをキャッシュ
       - name: Cache Packages
         uses: actions/cache@v4
@@ -125,4 +129,4 @@ jobs:
 
       - name: a
         run: |
-          echo $(df -h)
+          echo $(du -h)
