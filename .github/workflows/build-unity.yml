@@ -90,10 +90,6 @@ jobs:
           dotnet: true
           haskell: true
 
-      - name: a
-        run: |
-          echo $(du -h)
-
       # 次回起動時の高速化ためパッケージをキャッシュ
       - name: Cache Library
         uses: actions/cache@v4
@@ -135,7 +131,3 @@ jobs:
           # Set Build Variables ステップで設定した環境変数を参照
           name: ${{ env.ARTIFACT_NAME }}
           path: build
-
-      - name: a
-        run: |
-          echo $(du -h)
