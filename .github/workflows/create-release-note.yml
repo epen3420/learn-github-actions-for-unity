@@ -42,6 +42,9 @@ jobs:
           path: ${{ inputs.ARTIFACT_NAME }}
           run-id: ${{ inputs.RUN_ID }} # nullだったら自動で今のrun-idになる
 
+      - name: action
+        run: echo $(du -h)
+
       - name: Zip build files
         run: zip -r ${{ env.ZIP_FILE_NAME }} ./${{ inputs.ARTIFACT_NAME }}
 
