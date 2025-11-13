@@ -80,7 +80,7 @@ jobs:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         with:
-          android: false
+          android: false # androidビルドするかもしれないし
           docker-images: false # 元からdockerはない
           tool-cache: false # 一番時間かかる(10倍くらい)
           large-packages: false # 二番目に時間がかかる
