@@ -61,7 +61,8 @@ jobs:
           elif [ "${{ inputs.build_target_name }}" == "WebGL" ]; then
             echo "build_target=WebGL" >> $GITHUB_ENV
             echo "build_custom_parameters<<EOF" >> $GITHUB_ENV
-            echo "-webglDecompressionFallback true" >> $GITHUB_ENV
+            echo "-webglCompressionFormat Brotli" >> $GITHUB_ENV
+            echo "-webglDecompressionFallback false" >> $GITHUB_ENV
             echo "-webglDataCaching true" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
           else
