@@ -13,7 +13,7 @@ on:
         type: string
       RUN_ID:
         description: 'Build artifact run id to download'
-        required: false
+        required: true
         type: string
 
   workflow_call:
