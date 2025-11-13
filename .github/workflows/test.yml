@@ -34,7 +34,7 @@ jobs:
     steps:
       # 仮想環境にクローン
       - name: Check out my unity project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 

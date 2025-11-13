@@ -40,7 +40,7 @@ jobs:
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
           path: ${{ inputs.ARTIFACT_NAME }}
-          run-id: ${{ inputs.RUN_ID }}
+          run-id: ${{ inputs.RUN_ID }} # nullだったら自動で今のrun-idになる
 
       - name: Zip build files
         run: zip -r ${{ env.ZIP_FILE_NAME }} ./${{ inputs.ARTIFACT_NAME }}
@@ -52,5 +52,5 @@ jobs:
         with:
           tag_name: ${{ inputs.VERSION_TAG }}
           name: Release ${{ inputs.VERSION_TAG }}
-          generate_release_notes: true
           files: ./${{ env.ZIP_FILE_NAME }}
+          generate_release_notes: true # 自動でリリースの記事を書いてくれる

@@ -37,7 +37,7 @@ jobs:
 
   call_release:
     name: Release
-    needs: [call_build]
+    needs: call_build
 
     uses: ./.github/workflows/create-release-note.yml
     secrets: inherit

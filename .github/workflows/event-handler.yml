@@ -10,9 +10,12 @@ jobs:
   init:
     name: Check conditions and Set version variables
     runs-on: ubuntu-latest
+    # PRがマージ、ブランチ名がrelease/*
     if: >
       github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.head.ref, 'release/') == true
+
+    # release/のあとをversion_tagとして出力
     outputs:
       version_tag: ${{ steps.var.outputs.version_tag }}
 
@@ -22,6 +25,7 @@ jobs:
           branch_name="${{ github.event.pull_request.head.ref }}"
           echo 'version_tag=$(echo "${branch_name}" | sed 's/release\///')' >> $GITHUB_ENV
 
+  # labelがrelease/Windowの時実行行
   call_release_windows_to_github:
     name: Call release Windows build to GitHub
     needs: init
@@ -32,6 +36,7 @@ jobs:
       build_target_name: Windows
       version_tag: ${{ needs.set_version.outputs.version_tag }}
 
+  # labelがrelease/WebGLの時実行
   call_release_webgl_to_netlify:
     name: Call release WebGL build to Netlify
     needs: init

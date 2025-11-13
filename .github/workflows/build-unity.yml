@@ -27,6 +27,7 @@ on:
       UNITY_LICENSE:
         required: true
 
+    # 生成したアーティファクト名を出力
     outputs:
       artifact_name:
         description: "The name of the build artifact"
@@ -43,7 +44,7 @@ jobs:
     steps:
       # 仮想環境にクローン
       - name: Check out my unity project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -71,11 +72,8 @@ jobs:
           fi
 
           # ARTIFACT_NAME を設定
-          # GITHUB_ENV への書き込みはジョブ内で即時有効になる
           ARTIFACT_NAME_VALUE="${{ inputs.build_target_name }}-Build-$(git rev-parse --short HEAD)"
           echo "ARTIFACT_NAME=${ARTIFACT_NAME_VALUE}" >> $GITHUB_ENV
-
-          # ジョブの outputs 用にアーティファクト名を出力
           echo "artifact_name=${ARTIFACT_NAME_VALUE}" >> $GITHUB_OUTPUT
 
       # Unityビルドの前にランナーの空き容量を確保する
@@ -113,12 +111,10 @@ jobs:
       - name: Run the build
         uses: game-ci/unity-builder@v4
         env:
-          # 受け取ったシークレットを使う
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
-          # Set Build Variables ステップで設定した環境変数を参照
           targetPlatform: ${{ env.build_target }}
           buildName: .
           allowDirtyBuild: true
@@ -128,6 +124,5 @@ jobs:
       - name: Upload the Build
         uses: actions/upload-artifact@v4
         with:
-          # Set Build Variables ステップで設定した環境変数を参照
           name: ${{ env.ARTIFACT_NAME }}
           path: build
