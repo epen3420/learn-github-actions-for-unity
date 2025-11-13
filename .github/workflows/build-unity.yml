@@ -110,6 +110,7 @@ jobs:
         with:
           # Set Build Variables ステップで設定した環境変数を参照
           targetPlatform: ${{ env.build_target }}
+          buildName: .
           allowDirtyBuild: true
           customParameters: ${{ env.build_custom_parameters }}
 
@@ -119,7 +120,7 @@ jobs:
         with:
           # Set Build Variables ステップで設定した環境変数を参照
           name: ${{ env.ARTIFACT_NAME }}
-          path: build/${{ env.build_target }}
+          path: build
 
       - name: a
         run: |
