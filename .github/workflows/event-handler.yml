@@ -41,6 +41,7 @@ jobs:
     if: >
       contains(github.event.pull_request.labels.*.name, 'release/Windows')
     uses: ./.github/workflows/release-github.yml
+    secrets: inherit
     with:
       build_target_name: Windows
       version_tag: ${{ needs.init.outputs.version_tag }}
@@ -52,5 +53,6 @@ jobs:
     if: >
       contains(github.event.pull_request.labels.*.name, 'release/WebGL')
     uses: ./.github/workflows/release-netlify.yml
+    secrets: inherit
     with:
       version_tag: ${{ needs.init.outputs.version_tag }}

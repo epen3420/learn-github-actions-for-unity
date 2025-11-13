@@ -8,6 +8,14 @@ on:
         required: true
         type: string
 
+    secrets:
+      UNITY_EMAIL:
+        required: true
+      UNITY_PASSWORD:
+        required: true
+      UNITY_LICENSE:
+        required: true
+
   workflow_dispatch:
     inputs:
       version_tag:
