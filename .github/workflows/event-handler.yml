@@ -43,7 +43,7 @@ jobs:
     #   version_tag: ${{ needs.init.outputs.version_tag }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo windows
+      - run: echo windows ${{ needs.init.outputs.version_tag }}
 
   # labelがrelease/WebGLの時実行
   call_release_webgl_to_netlify:
