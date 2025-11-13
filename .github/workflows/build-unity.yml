@@ -78,7 +78,7 @@ jobs:
 
       # Unityビルドの前にランナーの空き容量を確保する
       - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@main
+        uses: jlumbroso/free-disk-space@v1.3.1
         with:
           android: false # androidビルドするかもしれないし
           docker-images: false # 元からdockerはない
