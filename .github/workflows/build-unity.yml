@@ -116,7 +116,6 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           targetPlatform: ${{ env.build_target }}
-          buildName: .
           allowDirtyBuild: true
           customParameters: ${{ env.build_custom_parameters }}
 
@@ -125,4 +124,4 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: build
+          path: build/${{ env.build_target }}
