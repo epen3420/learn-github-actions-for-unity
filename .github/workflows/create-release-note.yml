@@ -1,6 +1,7 @@
 name: Create GitHub Release Note
 
 on:
+  # リポジトリ上でテスト可能にするため
   workflow_dispatch:
     inputs:
       VERSION_TAG:
