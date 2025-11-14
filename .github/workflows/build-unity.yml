@@ -57,11 +57,9 @@ jobs:
           # inputs.build_target_name に応じて build_target (プラットフォーム名) を設定
           if [ "${{ inputs.build_target_name }}" == "Windows" ]; then
             echo "build_target=StandaloneWindows64" >> $GITHUB_ENV
-            echo "build_custom_parameters=''" >> $GITHUB_ENV
 
           elif [ "${{ inputs.build_target_name }}" == "WebGL" ]; then
             echo "build_target=WebGL" >> $GITHUB_ENV
-            echo "build_custom_parameters=-webglCompressionFormat Gzip -webglDecompressionFallback false -webglDataCaching true" >> $GITHUB_ENV
           else
             echo "Error: Invalid build_target_name."
             exit 1
@@ -104,6 +102,7 @@ jobs:
             Packages-
 
       # Unity ビルド実行
+      # 詳細の設定はUnity側で行えば良い
       - name: Run the build
         uses: game-ci/unity-builder@v4
         env:
@@ -113,7 +112,6 @@ jobs:
         with:
           targetPlatform: ${{ env.build_target }}
           allowDirtyBuild: true
-          customParameters: ${{ env.build_custom_parameters }}
 
       # ビルド成果物をアップロード
       - name: Upload the Build
