@@ -3,10 +3,9 @@ name: Deploy to GitHub Pages
 on:
   workflow_call:
     outputs:
-      url: ${{ jobs.deploy.deployment.outputs.page_url }}
-  workflow_dispatch:
-    outputs:
-      url: ${{ jobs.deploy.deployment.outputs.page_url }}
+      url:
+        value: ${{ jobs.deploy.deployment.outputs.page_url }}
+  workflow_dispatch: {}
 
 
 jobs:
