@@ -41,7 +41,7 @@ jobs:
           run-id: ${{ inputs.run_id }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           repository: ${{ inputs.repository_path }}
           ssh-key: ${{ secrets.DEPLOY_REPO_SECRET_KEY }}
