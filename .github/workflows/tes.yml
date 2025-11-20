@@ -41,7 +41,7 @@ jobs:
         id: deployment # 1. ここでIDをつける
         uses: actions/deploy-pages@v4
         with: 
-          artifact_name: ${{ environment.name }}
+          artifact_name: ${{ needs.build.outputs.artifact_name }}
 
       - run: |
           echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
