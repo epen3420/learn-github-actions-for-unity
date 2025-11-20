@@ -3,23 +3,43 @@ name: Deploy to GitHub Pages
 on:
   workflow_call:
     outputs:
+      # 3. 最後にワークフローの出力として定義（ジョブの出力を見る）
       url:
-        value: ${{ jobs.deploy.deployment.outputs.page_url }}
+        value: ${{ jobs.deploy.outputs.page_url }}
+        description: "The URL of the deployed page"
 
   workflow_dispatch: {}
 
-
 jobs:
+  build:
+    # ここで呼び出す build-unity.yml の中で
+    # actions/upload-pages-artifact を実行していることが前提です
+    uses: ./.github/workflows/build-unity.yml
+    secrets: inherit
+    with:
+      build_target_name: WebGL
+
   deploy:
-      runs-on: ubuntu-latest
-      environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
 
-      steps:
-        - name: Deploy to GitHub Pages
-          id: deployment
-          uses: actions/deploy-pages@v2
+    # 重要: これがないと権限エラーで失敗します
+    permissions:
+      pages: write
+      id-token: write
 
-        - run: |
-            echo ${{ steps.deployment.outputs.page_url }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # 2. ジョブの出力として定義（ステップの出力を見る）
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment # 1. ここでIDをつける
+        uses: actions/deploy-pages@v2
+
+      - run: |
+          echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
