@@ -110,6 +110,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
+          buildName: ${{ env.ARTIFACT_NAME }}
           targetPlatform: ${{ env.build_target }}
           allowDirtyBuild: true
 
