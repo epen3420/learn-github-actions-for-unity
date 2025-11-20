@@ -44,7 +44,7 @@ jobs:
     steps:
       # 仮想環境にクローン
       - name: Check out my unity project
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -116,7 +116,7 @@ jobs:
 
       # ビルド成果物をアップロード
       - name: Upload the Build
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/${{ env.build_target }}
