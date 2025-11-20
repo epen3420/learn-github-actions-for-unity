@@ -29,7 +29,7 @@ jobs:
       id-token: write
 
     environment:
-      name: ${{ needs.build.outputs.artifact_name }}
+      name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     # 2. ジョブの出力として定義（ステップの出力を見る）
@@ -40,8 +40,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment # 1. ここでIDをつける
         uses: actions/deploy-pages@v4
-        with: 
-          artifact_name: ${{ needs.build.outputs.artifact_name }}
 
       - run: |
           echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
