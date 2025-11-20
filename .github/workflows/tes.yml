@@ -40,6 +40,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment # 1. ここでIDをつける
         uses: actions/deploy-pages@v4
+        with: 
+          artifact_name: ${{ environment.name }}
 
       - run: |
           echo "Deployed to: ${{ steps.deployment.outputs.page_url }}"
