@@ -1,1 +1,29 @@
-name: test
+name: Deploy to GitHub Pages
+
+on:
+  workflow_call:
+    outputs:
+      url: ${{ jobs.deploy.deployment.outputs.page_url }}
+  workflow_dispatch:
+    outputs:
+      url: ${{ jobs.deploy.deployment.outputs.page_url }}
+
+
+jobs:
+  deploy:
+      runs-on: ubuntu-latest
+      needs: build
+      permissions:
+        id-token: write
+        pages: write
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v2
+
+        - run: |
+            echo ${{ steps.deployment.outputs.page_url }}
