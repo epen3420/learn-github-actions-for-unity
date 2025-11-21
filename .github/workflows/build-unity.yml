@@ -119,7 +119,7 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           name: github-pages # Pages用の固定名にするのが一般的です
-          path: build/${{ env.build_target }}/artifact
+          path: build/${{ env.build_target }}/${{ github.event.repository.name }}
 
       # ビルド成果物をアップロード
       - name: Upload the Build
