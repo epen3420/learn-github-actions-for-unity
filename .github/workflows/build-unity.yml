@@ -114,14 +114,14 @@ jobs:
           targetPlatform: ${{ env.build_target }}
           allowDirtyBuild: true
 
+      # ビルド成果物をアップロード
       - name: Upload the build for GitHub Pages
         if: inputs.build_target_name == 'WebGL'
         uses: actions/upload-pages-artifact@v4
         with:
-          name: github-pages # Pages用の固定名にするのが一般的です
+          name: github-pages
           path: build/${{ env.build_target }}/${{ github.event.repository.name }}
 
-      # ビルド成果物をアップロード
       - name: Upload the Build
         uses: actions/upload-artifact@v4
         with:

@@ -1,4 +1,4 @@
-name: Release WebGL Build To Netlify
+name: Deploy WebGL Build To Netlify
 
 on:
   workflow_call:
