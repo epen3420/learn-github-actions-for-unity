@@ -6,7 +6,7 @@ on:
       - main
     types: [closed]
 
-# labelにrelease/Windowsとrelease/WebGLがついてたら両方通る
+# labelにrelease/Windowsがついてたら両方通る
 # ブランチ名がrelease/*だったら、*をタグにする
 # じゃなければ、ブランチ名がそのままタグになる
 jobs:
@@ -16,14 +16,32 @@ jobs:
     # PRがマージ、labelがrelease/*
     if: >
       github.event.pull_request.merged == true &&
-      ( contains(github.event.pull_request.labels.*.name, 'release/Windows') ||
-        contains(github.event.pull_request.labels.*.name, 'release/WebGL') )
+      contains(github.event.pull_request.labels.*.name, 'release/Windows')
 
     outputs:
       version_tag: ${{ steps.var.outputs.version_tag }}
 
     steps:
-      - id: var
+      - name: Check exist UNITY_EMAIL
+        if: secrets.UNITY_EMAIL == ''
+        run: |
+          echo "::error::UNITY_EMAILが設定されていません。"
+          exit 1
+
+      - name: Check exist UNITY_PASSWORD
+        if: secrets.UNITY_PASSWORD == ''
+        run: |
+          echo "::error::UNITY_PASSWORDが設定されていません。"
+          exit 1
+
+      - name: Check exist UNITY_LICENSE
+        if: secrets.UNITY_LICENSE == ''
+        run: |
+          echo "::error::UNITY_LICENSEが設定されていません。"
+          exit 1
+
+      - name: Set version tag
+        id: var
         # version_tag = ブランチ名がrelease/*の場合その後を使い、それ以外はそのまま
         run: |
           branch_name="${{ github.event.pull_request.head.ref }}"
@@ -44,15 +62,4 @@ jobs:
     secrets: inherit
     with:
       build_target_name: Windows
-      version_tag: ${{ needs.init.outputs.version_tag }}
-
-  # labelがrelease/WebGLの時実行
-  call_release_webgl_to_netlify:
-    name: Call release WebGL build to Netlify
-    needs: init
-    if: >
-      contains(github.event.pull_request.labels.*.name, 'release/WebGL')
-    uses: ./.github/workflows/release-netlify.yml
-    secrets: inherit
-    with:
       version_tag: ${{ needs.init.outputs.version_tag }}
