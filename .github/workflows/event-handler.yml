@@ -23,37 +23,6 @@ jobs:
       version_tag: ${{ steps.var.outputs.version_tag }}
 
     steps:
-      - name: check_env
-        # シークレットの値を環境変数として定義
-        env:
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
-        run: |
-          isError=false
-
-          # シェルスクリプト内では、定義した環境変数名（$UNITY_EMAIL）を参照します
-          # [ -z "$VAR" ] は「変数が空である」ことをチェック
-          if [ -z "$UNITY_EMAIL" ]; then
-            echo "::error::UNITY_EMAILが設定されていません"
-            isError=true
-          fi
-
-          if [ -z "$UNITY_PASSWORD" ]; then
-            echo "::error::UNITY_PASSWORDが設定されていません"
-            isError=true
-          fi
-
-          if [ -z "$UNITY_LICENSE" ]; then
-            echo "::error::UNITY_LICENSEが設定されていません"
-            isError=true
-          fi
-
-          if $isError ; then
-            exit 1
-          fi
-
       - name: Set version tag
         id: var
         # version_tag = ブランチ名がrelease/*の場合その後を使い、それ以外はそのまま
