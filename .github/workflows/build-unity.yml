@@ -4,18 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       build_target_name:
-        description: 'Choose Windows or WebGL'
+        description: 'Choose Windows, WebGL or For_GitHub_Pages'
         required: true
         type: choice
         options:
           - Windows
           - WebGL
+          - For_GitHub_Pages
         default: 'Windows'
 
   workflow_call:
     inputs:
       build_target_name:
-        description: 'Choose Windows or WebGL'
+        description: 'Choose Windows, WebGL or For_GitHub_Pages'
         required: true
         type: string
 
@@ -77,6 +78,8 @@ jobs:
 
           elif [ "${{ inputs.build_target_name }}" == "WebGL" ]; then
             echo "build_target=WebGL" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.build_target_name }}" == "For_GitHub_Pages" ]; then
+            echo "build_target=WebGL" >> $GITHUB_OUTPUT
           else
             echo "Error: Invalid build_target_name."
             exit 1
@@ -92,6 +95,7 @@ jobs:
     needs: init
     env:
       ARTIFACT_NAME: ${{ needs.init.outputs.artifact_name }}
+      BUILD_TARGET_NAME: ${{ inputs.build_target_name }}
       BUILD_TARGET: ${{ needs.init.outputs.build_target }}
       REPO_NAME: ${{ github.event.repository.name }}
 
@@ -132,6 +136,11 @@ jobs:
           key: Packages-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
           restore-keys: |
             Packages-
+
+      - name: Change settings for github pages
+        if: ${{ env.BUILD_TARGET_NAME }} ==  "For_GitHub_Pages"
+        run: |
+          sed -i -e 's/webGLCompressionFormat: ./webGLCompressionFormat: 2/' ProjectSettings/ProjectSettings.asset
 
       # Unity ビルド実行
       # 詳細の設定はUnity側で行えば良い
