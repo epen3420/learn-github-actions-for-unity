@@ -46,17 +46,17 @@ jobs:
       - name: check_env
         run: |
           isError=false
-          if [ -z ${{ secrets.UNITY_EMAIL }} ]; then
+          if [ -z "${{ secrets.UNITY_EMAIL }}" ]; then
             echo "::error::UNITY_EMAILが設定されていません"
             isError=true
           fi
 
-          if [ -z ${{ secrets.UNITY_PASSWORD }} ]; then
+          if [ -z "${{ secrets.UNITY_PASSWORD }}" ]; then
             echo "::error::UNITY_PASSWORDが設定されていません"
             isError=true
           fi
 
-          if [ -z ${{ secrets.UNITY_LICENSE }} ]; then
+          if [ -z "${{ secrets.UNITY_LICENSE }}" ]; then
             echo "::error::UNITY_LICENSEが設定されていません"
             isError=true
           fi
@@ -83,7 +83,7 @@ jobs:
           fi
 
           # ARTIFACT_NAME を設定
-          ARTIFACT_NAME_VALUE="${{ inputs.build_target_name }}-Build-$(git rev-parse --short HEAD)"
+          ARTIFACT_NAME_VALUE="${{ inputs.build_target_name }}-Build-${{ github.run_id }}"
           echo "artifact_name=${ARTIFACT_NAME_VALUE}" >> $GITHUB_OUTPUT
 
   build:
