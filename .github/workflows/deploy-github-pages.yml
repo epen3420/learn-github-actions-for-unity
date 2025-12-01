@@ -14,7 +14,7 @@ jobs:
     uses: ./.github/workflows/build-unity.yml
     secrets: inherit
     with:
-      build_target_name: WebGL
+      build_target_name: For_GitHub_Pages
 
   deploy:
     runs-on: ubuntu-latest
