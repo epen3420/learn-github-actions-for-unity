@@ -1,0 +1,27 @@
+name: Universal Discord Notifier
+
+on:
+  workflow_run:
+    workflows: ['*']
+    types: [completed]
+
+jobs:
+  notify_discord:
+    if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discordに通知を送信
+        uses: rjstone/discord-webhook-notify@v2
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          username: GitHub (Actions)
+          avatarUrl: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
+          title: "🔔 Workflow完了: ${{ github.event.workflow_run.name }}"
+          description: |
+            **リポジトリ:** ${{ github.repository }}
+            **ブランチ:** ${{ github.event.workflow_run.head_branch }}
+            **結果:** **${{ github.event.workflow_run.conclusion }}**
+            [実行詳細を見る](${{ github.event.workflow_run.html_url }})
+          severity: ${{ github.event.workflow_run.conclusion == 'success' && 'info' ||
+              github.event.workflow_run.conclusion == 'failure' && 'error' ||
+              'warn' }}

@@ -10,7 +10,6 @@ on:
         options:
           - Windows
           - WebGL
-          - For_GitHub_Pages
         default: 'Windows'
 
   workflow_call:
