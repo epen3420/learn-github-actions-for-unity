@@ -53,7 +53,7 @@ jobs:
     needs: init
     if: >
       contains(github.event.pull_request.labels.*.name, 'release/WebGL')
-    uses: ./.github/workflows/release-netlify.yml
+    uses: ./.github/workflows/deploy-github-pages.yml
     secrets: inherit
-    with:
-      version_tag: ${{ needs.init.outputs.version_tag }}
+    # with:
+    #   version_tag: ${{ needs.init.outputs.version_tag }}

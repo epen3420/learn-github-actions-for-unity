@@ -72,7 +72,7 @@ jobs:
             fi
 
             if [ -n "${{ inputs.target_url }}" ]; then
-              DESCRIPTION="${DESCRIPTION}\n**Target URL:** [ページを開く](${{ inputs.target_url }})"
+              DESCRIPTION="${DESCRIPTION}\n**添付リンク:** [ページを開く](${{ inputs.target_url }})"
             fi
 
             case "${{ inputs.status }}" in
