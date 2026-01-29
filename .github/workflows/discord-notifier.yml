@@ -58,7 +58,7 @@ jobs:
               *) SEVERITY="warn" ;;
             esac
 
-          elif [ "${{ github.event_name }}" == "workflow_call" ]; then
+          elif [ "${{ github.event_name }}" == "workflow_call" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             if [ -n "${{ inputs.title }}" ]; then
               TITLE="${{ inputs.title }}"
             else
