@@ -43,7 +43,6 @@ jobs:
       build_target: ${{ steps.vars.outputs.build_target }}
 
     steps:
-    steps:
       - name: Validate Secrets
         run: |
           required_secrets=("UNITY_EMAIL" "UNITY_PASSWORD" "UNITY_LICENSE")
