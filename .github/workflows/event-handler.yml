@@ -13,7 +13,7 @@ jobs:
   init:
     name: Check conditions and Set version variables
     runs-on: ubuntu-latest
-    # PRがマージ、labelがrelease/*
+    # PRがマージ、labelがrelease/Windows または release/WebGL
     if: >
       github.event.pull_request.merged == true &&
       ( contains(github.event.pull_request.labels.*.name, 'release/Windows') ||

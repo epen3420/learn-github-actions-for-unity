@@ -43,50 +43,52 @@ jobs:
       build_target: ${{ steps.vars.outputs.build_target }}
 
     steps:
-      - name: check_env
+    steps:
+      - name: Validate Secrets
         run: |
-          isError=false
-          if [ -z "${{ secrets.UNITY_EMAIL }}" ]; then
-            echo "::error::UNITY_EMAILが設定されていません"
-            isError=true
-          fi
+          required_secrets=("UNITY_EMAIL" "UNITY_PASSWORD" "UNITY_LICENSE")
+          is_error=false
+          for secret in "${required_secrets[@]}"; do
+            if [ -z "${!secret}" ]; then
+              echo "::error::${secret}が設定されていません"
+              is_error=true
+            fi
+          done
 
-          if [ -z "${{ secrets.UNITY_PASSWORD }}" ]; then
-            echo "::error::UNITY_PASSWORDが設定されていません"
-            isError=true
-          fi
-
-          if [ -z "${{ secrets.UNITY_LICENSE }}" ]; then
-            echo "::error::UNITY_LICENSEが設定されていません"
-            isError=true
-          fi
-
-          if $isError ; then
+          if $is_error; then
             exit 1
           fi
+        env:
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
       # ビルドターゲットに応じて環境変数を設定
       - name: Set Build Variables
-        id: vars # ジョブの outputs で参照するため id を設定
+        id: vars
         run: |
-          echo "Setting build variables based on input: ${{ inputs.build_target_name }}"
+          target="${{ inputs.build_target_name }}"
+          echo "Setting build variables based on input: $target"
 
-          # inputs.build_target_name に応じて build_target (プラットフォーム名) を設定
-          if [ "${{ inputs.build_target_name }}" == "Windows" ]; then
-            echo "build_target=StandaloneWindows64" >> $GITHUB_OUTPUT
+          case "$target" in
+            "Windows")
+              build_target="StandaloneWindows64"
+              ;;
+            "WebGL"|"For_GitHub_Pages")
+              build_target="WebGL"
+              ;;
+            *)
+              echo "::error::Invalid build_target_name: $target"
+              exit 1
+              ;;
+          esac
 
-          elif [ "${{ inputs.build_target_name }}" == "WebGL" ]; then
-            echo "build_target=WebGL" >> $GITHUB_OUTPUT
-          elif [ "${{ inputs.build_target_name }}" == "For_GitHub_Pages" ]; then
-            echo "build_target=WebGL" >> $GITHUB_OUTPUT
-          else
-            echo "Error: Invalid build_target_name."
-            exit 1
-          fi
+          echo "build_target=$build_target" >> $GITHUB_OUTPUT
+
 
           # ARTIFACT_NAME を設定
-          ARTIFACT_NAME_VALUE="${{ inputs.build_target_name }}-Build-${{ github.run_id }}"
-          echo "artifact_name=${ARTIFACT_NAME_VALUE}" >> $GITHUB_OUTPUT
+          artifact_name="${{ inputs.build_target_name }}-Build-${{ github.run_id }}"
+          echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
 
   build:
     name: Run the build for ${{ inputs.build_target_name }}

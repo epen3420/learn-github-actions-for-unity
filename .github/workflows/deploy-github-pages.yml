@@ -2,19 +2,34 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_call:
+    inputs:
+      build_target_name:
+        description: 'Build target name passed to build-unity.yml'
+        required: false
+        type: string
+        default: 'For_GitHub_Pages'
     outputs:
       url:
         value: ${{ jobs.deploy.outputs.page_url }}
         description: "The URL of the deployed page"
 
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      build_target_name:
+        description: 'Build target name passed to build-unity.yml'
+        required: true
+        type: choice
+        options:
+          - For_GitHub_Pages
+          - WebGL
+        default: 'For_GitHub_Pages'
 
 jobs:
   build-webgl:
     uses: ./.github/workflows/build-unity.yml
     secrets: inherit
     with:
-      build_target_name: For_GitHub_Pages
+      build_target_name: ${{ inputs.build_target_name }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -35,4 +50,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

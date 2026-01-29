@@ -1,27 +1,86 @@
 name: Universal Discord Notifier
 
 on:
-  workflow_run:
-    workflows: ['*']
-    types: [completed]
+  workflow_call:
+    inputs:
+      title:
+        description: 'Notification Title'
+        required: false
+        type: string
+      message:
+        description: 'Notification Message Body'
+        required: false
+        type: string
+      status:
+        description: 'Workflow Status (success, failure, cancelled)'
+        required: false
+        type: string
+        default: 'success'
+    secrets:
+      DISCORD_WEBHOOK:
+        required: true
 
 jobs:
   notify_discord:
-    if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
+    if: ${{ github.event_name == 'workflow_call' || github.event.workflow_run.conclusion != 'cancelled' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Set Notification Content
+        id: content
+        run: |
+          # デフォルト値を設定
+          TITLE="🔔 Workflow Notification"
+          DESCRIPTION=""
+          SEVERITY="info"
+          WEBHOOK_URL="${{ secrets.DISCORD_WEBHOOK }}"
+
+          if [ "${{ github.event_name }}" == "workflow_run" ]; then
+            TITLE="🔔 Workflow完了: ${{ github.event.workflow_run.name }}"
+            DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.event.workflow_run.head_branch }}\n**結果:** **${{ github.event.workflow_run.conclusion }}**\n[実行詳細を見る](${{ github.event.workflow_run.html_url }})"
+
+            case "${{ github.event.workflow_run.conclusion }}" in
+              "success") SEVERITY="info" ;;
+              "failure") SEVERITY="error" ;;
+              *) SEVERITY="warn" ;;
+            esac
+
+          elif [ "${{ github.event_name }}" == "workflow_call" ]; then
+            if [ -n "${{ inputs.title }}" ]; then
+              TITLE="${{ inputs.title }}"
+            else
+              TITLE="🔔 Workflow完了: ${{ github.workflow }}"
+            fi
+
+            if [ -n "${{ inputs.message }}" ]; then
+              DESCRIPTION="${{ inputs.message }}"
+            else
+              DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.ref_name }}\n[実行詳細を見る](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            fi
+
+            case "${{ inputs.status }}" in
+              "success") SEVERITY="info" ;;
+              "failure") SEVERITY="error" ;;
+              *) SEVERITY="warn" ;;
+            esac
+          fi
+
+          # GITHUB_OUTPUT に書き出し (改行を含むテキストの対応)
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+
+          # output multiline string
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "description<<$EOF" >> $GITHUB_OUTPUT
+          echo -e "$DESCRIPTION" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+
+          echo "severity=$SEVERITY" >> $GITHUB_OUTPUT
+
       - name: Discordに通知を送信
         uses: rjstone/discord-webhook-notify@v2
         with:
           webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
           username: GitHub (Actions)
           avatarUrl: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png"
-          title: "🔔 Workflow完了: ${{ github.event.workflow_run.name }}"
-          description: |
-            **リポジトリ:** ${{ github.repository }}
-            **ブランチ:** ${{ github.event.workflow_run.head_branch }}
-            **結果:** **${{ github.event.workflow_run.conclusion }}**
-            [実行詳細を見る](${{ github.event.workflow_run.html_url }})
-          severity: ${{ github.event.workflow_run.conclusion == 'success' && 'info' ||
-              github.event.workflow_run.conclusion == 'failure' && 'error' ||
-              'warn' }}
+          title: ${{ steps.content.outputs.title }}
+          description: ${{ steps.content.outputs.description }}
+          severity: ${{ steps.content.outputs.severity }}
