@@ -7,6 +7,8 @@ on:
         value: ${{ jobs.deploy.outputs.page_url }}
         description: "The URL of the deployed page"
 
+  workflow_dispatch: {}
+
 jobs:
   build-webgl:
     uses: ./.github/workflows/build-unity.yml
