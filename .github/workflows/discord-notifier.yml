@@ -16,6 +16,10 @@ on:
         required: false
         type: string
         default: 'success'
+      target_url:
+        description: 'Target URL to display (e.g. Deployed Page URL)'
+        required: false
+        type: string
     secrets:
       DISCORD_WEBHOOK:
         required: true
@@ -38,6 +42,12 @@ jobs:
             TITLE="🔔 Workflow完了: ${{ github.event.workflow_run.name }}"
             DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.event.workflow_run.head_branch }}\n**結果:** **${{ github.event.workflow_run.conclusion }}**\n[実行詳細を見る](${{ github.event.workflow_run.html_url }})"
 
+            # PRリンクの追加 (workflow_runのコンテキストから取得)
+            PR_URL="${{ github.event.workflow_run.pull_requests[0].html_url }}"
+            if [ -n "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
+               DESCRIPTION="${DESCRIPTION}\n**PR:** [Pull Requestを見る]($PR_URL)"
+            fi
+
             case "${{ github.event.workflow_run.conclusion }}" in
               "success") SEVERITY="info" ;;
               "failure") SEVERITY="error" ;;
@@ -55,6 +65,10 @@ jobs:
               DESCRIPTION="${{ inputs.message }}"
             else
               DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.ref_name }}\n[実行詳細を見る](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            fi
+
+            if [ -n "${{ inputs.target_url }}" ]; then
+              DESCRIPTION="${DESCRIPTION}\n**Target URL:** [ページを開く](${{ inputs.target_url }})"
             fi
 
             case "${{ inputs.status }}" in

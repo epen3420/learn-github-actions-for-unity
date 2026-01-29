@@ -50,3 +50,17 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  notify:
+    needs: deploy
+    name: Notify Discord on Complete
+    uses: ./.github/workflows/discord-notifier.yml
+    if: always()
+    secrets: inherit
+    with:
+      title: "🚀 GitHub Pages Deployment"
+      message: |
+        **リポジトリ:** ${{ github.repository }}
+        **結果:** **${{ needs.deploy.result }}**
+      status: ${{ needs.deploy.result }}
+      target_url: ${{ needs.deploy.outputs.page_url }}
