@@ -65,7 +65,7 @@ jobs:
           if [ -z "$PR_URL" ] || [ "$PR_URL" == "null" ]; then
              echo "PR URL not found in context. Searching via GitHub CLI for commit ${{ github.sha }}..."
              # Search for merged PRs containing this SHA
-             SEARCH_RESULT=$(gh pr list --search "${{ github.sha }} is:merged" --state merged --json url --jq '.[0].url' || echo "")
+             SEARCH_RESULT=$(gh pr list --repo "${{ github.repository_owner }}/${{ github.repository }}" --search "${{ github.sha }} is:merged" --state merged --json url --jq '.[0].url' || echo "")
              if [ -n "$SEARCH_RESULT" ]; then
                 PR_URL="$SEARCH_RESULT"
                 echo "Found associated PR: $PR_URL"
