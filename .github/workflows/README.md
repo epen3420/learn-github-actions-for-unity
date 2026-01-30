@@ -4,17 +4,42 @@
 
 ## 目次
 
+1.
 1. [Unity Build (build-unity.yml)](#unity-build-build-unityyml)
-2. [Deploy to GitHub Pages (deploy-github-pages.yml)](#deploy-to-github-pages-deploy-github-pagesyml)
-3. [Universal Discord Notifier (discord-notifier.yml)](#universal-discord-notifier-discord-notifieryml)
-4. [GitHub Event Handler (event-handler.yml)](#github-event-handler-event-handleryml)
-5. [Release To GitHub Release (release-github.yml)](#release-to-github-release-release-githubyml)
-6. [Deploy WebGL Build To Netlify (deploy-netlify.yml)](#deploy-webgl-build-to-netlify-deploy-netlifyyml)
-7. [Create GitHub Release Note (create-release-note.yml)](#create-github-release-note-create-release-noteyml)
-8. [Push Build To Other Repository (push-build-to-other-repo.yml)](#push-build-to-other-repository-push-build-to-other-repoyml)
-9. [全体的な注意点](#全体的な注意点)
+1. [Deploy to GitHub Pages (deploy-github-pages.yml)](#deploy-to-github-pages-deploy-github-pagesyml)
+1. [Universal Discord Notifier (discord-notifier.yml)](#universal-discord-notifier-discord-notifieryml)
+1. [GitHub Event Handler (event-handler.yml)](#github-event-handler-event-handleryml)
+1. [Release To GitHub Release (release-github.yml)](#release-to-github-release-release-githubyml)
+1. [Deploy WebGL Build To Netlify (deploy-netlify.yml)](#deploy-webgl-build-to-netlify-deploy-netlifyyml)
+1. [Create GitHub Release Note (create-release-note.yml)](#create-github-release-note-create-release-noteyml)
+1. [Push Build To Other Repository (push-build-to-other-repo.yml)](#push-build-to-other-repository-push-build-to-other-repoyml)
+1. [全体的な注意点](#全体的な注意点)
 
 ---
+
+## 必要な環境変数
+1. Unityのライセンス関連
+* `UNITY_EMAIL`: Unityアカウントのメアド
+* `UNITY_PASSWORD`: Unityアカウントのパスワード
+* `UNITY_LICENSE`:
+  1. UnityHubを開く
+  1. LICENSEタブを開く
+  1. Add licenseを押す
+  1. Get a free personal licenseを押す
+  1. Agree and get personal edition licenseを押す
+  1. `C:\ProgramData\Unity\Unity_lic.ulf`の中身をコピー
+
+
+1. GitHubのリポジトリ
+2. Settings
+3. Secrets and variabales
+4. Actions
+5. Repository secrets
+6. New repository secret
+上の三つ分やる
+
+* DISCORD_WEBHOOK
+
 
 ## Unity Build (build-unity.yml)
 

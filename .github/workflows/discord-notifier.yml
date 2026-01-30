@@ -1,10 +1,6 @@
 name: Universal Discord Notifier
 
 on:
-  workflow_run:
-    workflows: ['*']
-    types: [completed]
-
   workflow_call:
     inputs:
       title:
@@ -30,11 +26,12 @@ on:
 
 jobs:
   notify_discord:
-    if: ${{ github.event_name == 'workflow_call' || github.event.workflow_run.conclusion != 'cancelled' }}
     runs-on: ubuntu-latest
     steps:
       - name: Set Notification Content
         id: content
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # デフォルト値を設定
           TITLE="🔔 Workflow Notification"
@@ -42,45 +39,51 @@ jobs:
           SEVERITY="info"
           WEBHOOK_URL="${{ secrets.DISCORD_WEBHOOK }}"
 
-          if [ "${{ github.event_name }}" == "workflow_run" ]; then
-            TITLE="🔔 Workflow完了: ${{ github.event.workflow_run.name }}"
-            DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.event.workflow_run.head_branch }}\n**結果:** **${{ github.event.workflow_run.conclusion }}**\n[実行詳細を見る](${{ github.event.workflow_run.html_url }})"
-
-            # PRリンクの追加 (workflow_runのコンテキストから取得)
-            PR_URL="${{ github.event.workflow_run.pull_requests[0].html_url }}"
-            if [ -n "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
-               DESCRIPTION="${DESCRIPTION}\n**PR:** [Pull Requestを見る]($PR_URL)"
-            fi
-
-            case "${{ github.event.workflow_run.conclusion }}" in
-              "success") SEVERITY="info" ;;
-              "failure") SEVERITY="error" ;;
-              *) SEVERITY="warn" ;;
-            esac
-
-          elif [ "${{ github.event_name }}" == "workflow_call" ] || [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            if [ -n "${{ inputs.title }}" ]; then
-              TITLE="${{ inputs.title }}"
-            else
-              TITLE="🔔 Workflow完了: ${{ github.workflow }}"
-            fi
-
-            if [ -n "${{ inputs.message }}" ]; then
-              DESCRIPTION="${{ inputs.message }}"
-            else
-              DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.ref_name }}\n[実行詳細を見る](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-            fi
-
-            if [ -n "${{ inputs.target_url }}" ]; then
-              DESCRIPTION="${DESCRIPTION}\n**添付リンク:** [ページを開く](${{ inputs.target_url }})"
-            fi
-
-            case "${{ inputs.status }}" in
-              "success") SEVERITY="info" ;;
-              "failure") SEVERITY="error" ;;
-              *) SEVERITY="warn" ;;
-            esac
+          # Title logic
+          if [ -n "${{ inputs.title }}" ]; then
+            TITLE="${{ inputs.title }}"
+          else
+            TITLE="🔔 Workflow完了: ${{ github.workflow }}"
           fi
+
+          # Message logic
+          if [ -n "${{ inputs.message }}" ]; then
+            DESCRIPTION="${{ inputs.message }}"
+          else
+            DESCRIPTION="**リポジトリ:** ${{ github.repository }}\n**ブランチ:** ${{ github.ref_name }}\n[実行詳細を見る](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          fi
+
+          # Target URL
+          if [ -n "${{ inputs.target_url }}" ]; then
+            DESCRIPTION="${DESCRIPTION}\n**添付リンク:** [ページを開く](${{ inputs.target_url }})"
+          fi
+
+          # Check for PR context and append (if triggered by PR)
+          PR_URL="${{ github.event.pull_request.html_url }}"
+
+          # Fallback: Search for PR associated with the commit if not found in context
+          if [ -z "$PR_URL" ] || [ "$PR_URL" == "null" ]; then
+             echo "PR URL not found in context. Searching via GitHub CLI for commit ${{ github.sha }}..."
+             # Search for merged PRs containing this SHA
+             SEARCH_RESULT=$(gh pr list --search "${{ github.sha }} is:merged" --state merged --json url --jq '.[0].url' || echo "")
+             if [ -n "$SEARCH_RESULT" ]; then
+                PR_URL="$SEARCH_RESULT"
+                echo "Found associated PR: $PR_URL"
+             else
+                echo "No associated PR found."
+             fi
+          fi
+
+          if [ -n "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
+              DESCRIPTION="${DESCRIPTION}\n**PR:** [Pull Requestを見る]($PR_URL)"
+          fi
+
+          # Status/Severity
+          case "${{ inputs.status }}" in
+            "success") SEVERITY="info" ;;
+            "failure") SEVERITY="error" ;;
+            *) SEVERITY="warn" ;;
+          esac
 
           # GITHUB_OUTPUT に書き出し (改行を含むテキストの対応)
           echo "title=$TITLE" >> $GITHUB_OUTPUT
