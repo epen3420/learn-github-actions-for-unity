@@ -138,7 +138,7 @@ jobs:
             Packages-
 
       - name: Change settings for github pages
-        if: ${{ env.BUILD_TARGET_NAME }} ==  "For_GitHub_Pages"
+        if: env.BUILD_TARGET_NAME == 'For_GitHub_Pages'
         run: |
           sed -i -e 's/webGLCompressionFormat: ./webGLCompressionFormat: 2/' ProjectSettings/ProjectSettings.asset
 
