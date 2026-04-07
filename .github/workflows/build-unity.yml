@@ -26,6 +26,14 @@ on:
         required: true
       UNITY_LICENSE:
         required: true
+      UNIGAS_IS_ENABLE:
+        required: false
+      UNIGAS_DEPLOY_ID:
+        required: false
+      UNIGAS_AUTH_TOKEN:
+        required: false
+      UNIGAS_SHEET_ID:
+        required: false
 
     # 生成したアーティファクト名を出力
     outputs:
@@ -41,6 +49,7 @@ jobs:
     outputs:
       artifact_name: ${{ steps.vars.outputs.artifact_name }}
       build_target: ${{ steps.vars.outputs.build_target }}
+      custom_parameters: ${{ steps.customParameters.outputs.customParameters }}
 
     steps:
       - name: Validate Secrets
@@ -89,6 +98,26 @@ jobs:
           artifact_name="${{ inputs.build_target_name }}-Build-${{ github.run_id }}"
           echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
 
+      - name: Set CustomParameters for unity-builder
+        id: customParameters
+        env:
+          UNIGAS_IS_ENABLE: ${{ secrets.UNIGAS_IS_ENABLE }}
+          UNIGAS_DEPLOY_ID: ${{ secrets.UNIGAS_DEPLOY_ID }}
+          UNIGAS_AUTH_TOKEN: ${{ secrets.UNIGAS_AUTH_TOKEN }}
+          UNIGAS_SHEET_ID: ${{ secrets.UNIGAS_SHEET_ID }}
+        run: |
+          custom_parameters=""
+          target_secrets=("UNIGAS_IS_ENABLE" "UNIGAS_DEPLOY_ID" "UNIGAS_AUTH_TOKEN" "UNIGAS_SHEET_ID")
+
+          for secret in "${target_secrets[@]}"; do
+            if [ -n "${!secret}" ]; then
+              custom_parameters="$custom_parameters -$secret ${!secret}"
+            fi
+          done
+
+          custom_parameters=$(echo $custom_parameters | xargs)
+          echo "customParameters=$custom_parameters" >> $GITHUB_OUTPUT
+
   build:
     name: Run the build for ${{ inputs.build_target_name }}
     runs-on: ubuntu-latest
@@ -98,6 +127,7 @@ jobs:
       BUILD_TARGET_NAME: ${{ inputs.build_target_name }}
       BUILD_TARGET: ${{ needs.init.outputs.build_target }}
       REPO_NAME: ${{ github.event.repository.name }}
+      CUSTOM_PARAMETERS: ${{ needs.init.outputs.custom_parameters }}
 
     steps:
       # 仮想環境にクローン
@@ -145,6 +175,7 @@ jobs:
           buildName: ${{ env.REPO_NAME }}
           targetPlatform: ${{ env.BUILD_TARGET }}
           allowDirtyBuild: true
+          customParameters: ${{ env.CUSTOM_PARAMETERS }}
 
       # ビルド成果物をアップロード
       - name: Upload the build for GitHub Pages
