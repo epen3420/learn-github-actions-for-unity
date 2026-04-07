@@ -118,24 +118,15 @@ jobs:
           dotnet: true
           haskell: true
 
-      # 次回起動時の高速化ためパッケージをキャッシュ
+      # 次回起動時の高速化ためライブラリをキャッシュ
       - name: Cache Library
         uses: actions/cache@v4
         with:
           path: Library
           # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
-          key: Library-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
+          key: Library-${{ env.BUILD_TARGET }}-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
           restore-keys: |
-            Library-
-
-      - name: Cache Packages
-        uses: actions/cache@v4
-        with:
-          path: Packages
-          # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
-          key: Packages-${{ hashFiles('Packages/manifest.json', 'Packages/packages-lock.json') }}
-          restore-keys: |
-            Packages-
+            Library-${{ env.BUILD_TARGET }}-
 
       - name: Change settings for github pages
         if: env.BUILD_TARGET_NAME == 'For_GitHub_Pages'
