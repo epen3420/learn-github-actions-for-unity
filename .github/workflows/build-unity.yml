@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       build_target_name:
-        description: 'Choose Windows, WebGL or For_GitHub_Pages'
+        description: 'Choose Windows, WebGL'
         required: true
         type: choice
         options:
@@ -148,7 +148,7 @@ jobs:
 
       # ビルド成果物をアップロード
       - name: Upload the build for GitHub Pages
-        if: env.BUILD_TARGET == 'WebGL'
+        if: env.BUILD_TARGET_NAME == 'For_GitHub_Pages'
         uses: actions/upload-pages-artifact@v4
         with:
           name: github-pages
@@ -156,6 +156,7 @@ jobs:
           retention-days: 1
 
       - name: Upload the Build
+        if: env.BUILD_TARGET_NAME != 'For_GitHub_Pages'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
