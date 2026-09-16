@@ -34,14 +34,14 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: build
           run-id: ${{ inputs.run_id }}
 
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ inputs.repository_path }}
           ssh-key: ${{ secrets.DEPLOY_REPO_SECRET_KEY }}
