@@ -1,0 +1,24 @@
+name: Unity Build (Windows/WebGL)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test1:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 仮想環境にクローン
+      - name: Check out my unity project
+        uses: actions/checkout@v7.0.0
+
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@v2.0.0
+        with:
+          android: true # androidビルドするかもしれないし
+          dotnet: true
+          haskell: true
+          large-packages: true # 二番目に時間がかかる
+          docker-images: true # 元からdockerはない
+          preinstalled-runtimes: true # 一番時間かかる(10倍くらい)
+          swap-storage: true
