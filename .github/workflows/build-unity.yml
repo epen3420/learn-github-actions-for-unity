@@ -132,25 +132,25 @@ jobs:
     steps:
       # 仮想環境にクローン
       - name: Check out my unity project
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.0
         with:
           lfs: true
 
       # Unityビルドの前にランナーの空き容量を確保する
       - name: Free Disk Space
-        uses: jlumbroso/free-disk-space@v1.3.1
+        uses: jlumbroso/free-disk-space@v2.0.0
         with:
           android: false # androidビルドするかもしれないし
-          docker-images: false # 元からdockerはない
-          tool-cache: false # 一番時間かかる(10倍くらい)
-          large-packages: false # 二番目に時間がかかる
-          swap-storage: true
           dotnet: true
           haskell: true
+          large-packages: false # 二番目に時間がかかる
+          docker-images: false # 元からdockerはない
+          preinstalled-runtimes: false # 一番時間かかる(10倍くらい)
+          swap-storage: true
 
       # 次回起動時の高速化ためライブラリをキャッシュ
       - name: Cache Library
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         with:
           path: Library
           # manifest.jsonかlock.jsonが変わったときだけキャッシュを更新
@@ -166,7 +166,7 @@ jobs:
       # Unity ビルド実行
       # 詳細の設定はUnity側で行えば良い
       - name: Run the build
-        uses: game-ci/unity-builder@v6
+        uses: game-ci/unity-builder@v6.0.0
         env:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -180,7 +180,7 @@ jobs:
       # ビルド成果物をアップロード
       - name: Upload the build for GitHub Pages
         if: env.BUILD_TARGET_NAME == 'For_GitHub_Pages'
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v5.0.0
         with:
           name: github-pages
           path: build/${{ env.BUILD_TARGET }}/${{ env.REPO_NAME }}
@@ -188,7 +188,7 @@ jobs:
 
       - name: Upload the Build
         if: env.BUILD_TARGET_NAME != 'For_GitHub_Pages'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/${{ env.BUILD_TARGET }}
