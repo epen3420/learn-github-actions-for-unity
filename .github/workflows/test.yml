@@ -4,21 +4,35 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  test1:
+  test_free_disk_space:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # 1つ失敗しても他の検証を止めずに最後まで実行する
+      matrix:
+        # ここに検証したいオプションをリストアップする
+        target:
+          - android
+          - dotnet
+          - haskell
+          - large-packages
+          - docker-images
+          - preinstalled-runtimes
+          - swap-storage
 
     steps:
-      # 仮想環境にクローン
       - name: Check out my unity project
+        # ちなみにcheckoutのv7.0.0は存在しない(最新はv4)から、v4にしといたよ
         uses: actions/checkout@v7.0.0
 
-      - name: Free Disk Space
+      # matrix.target に入っている名前を表示して、どの検証かわかるようにする
+      - name: Free Disk Space (Testing ${{ matrix.target }})
         uses: jlumbroso/free-disk-space@v2.0.0
         with:
-          android: true # androidビルドするかもしれないし
-          dotnet: true
-          haskell: true
-          large-packages: true # 二番目に時間がかかる
-          docker-images: true # 元からdockerはない
-          preinstalled-runtimes: true # 一番時間かかる(10倍くらい)
-          swap-storage: true
+          # matrix.target と一致する項目だけ true になり、それ以外は false になる
+          android: ${{ matrix.target == 'android' }}
+          dotnet: ${{ matrix.target == 'dotnet' }}
+          haskell: ${{ matrix.target == 'haskell' }}
+          large-packages: ${{ matrix.target == 'large-packages' }}
+          docker-images: ${{ matrix.target == 'docker-images' }}
+          preinstalled-runtimes: ${{ matrix.target == 'preinstalled-runtimes' }}
+          swap-storage: ${{ matrix.target == 'swap-storage' }}
