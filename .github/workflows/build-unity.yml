@@ -140,12 +140,12 @@ jobs:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@v2.0.0
         with:
-          android: false # androidビルドするかもしれないし
+          android: false
           dotnet: true
           haskell: true
-          large-packages: false # 二番目に時間がかかる
-          docker-images: false # 元からdockerはない
-          preinstalled-runtimes: false # 一番時間かかる(10倍くらい)
+          large-packages: false
+          docker-images: true
+          preinstalled-runtimes: true
           swap-storage: true
 
       # 次回起動時の高速化ためライブラリをキャッシュ
